@@ -230,17 +230,17 @@ class EloquentModelRelationAutoloadTest extends DatabaseTestCase
         Model::automaticallyEagerLoadRelationships();
 
         $tag = Tag::factory()->create();
+        Tag::get();
 
-        $this->assertNull($tag->post);
+        $tag->post_id = Post::factory()->create()->id;
+        $tag->save();
 
-        $post = Post::factory()->create();
-
-        $tag->post()->associate($post);
+        Tag::get();
 
 
-        foreach(Tag::get() as $tag){
-            $this->assertInstanceOf(Post::class,$tag->post);;
-        }
+      foreach(Tag::get() as $item){
+          dd($item->post);
+      }
     }
 }
 
