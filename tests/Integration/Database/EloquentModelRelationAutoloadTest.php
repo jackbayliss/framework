@@ -6,12 +6,20 @@ use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\Tests\Integration\Database\DatabaseTestCase;
 
 class EloquentModelRelationAutoloadTest extends DatabaseTestCase
 {
     protected function afterRefreshingDatabase()
     {
+        Schema::create('tags', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->nullable();
+            $table->string('status')->nullable();
+            $table->unsignedInteger('post_id')->nullable();
+
+        });
         Schema::create('posts', function (Blueprint $table) {
             $table->increments('id');
         });
@@ -214,7 +222,50 @@ class EloquentModelRelationAutoloadTest extends DatabaseTestCase
 
         DB::disableQueryLog();
     }
+
+    public function testRelationAutoLoadIsRetriedIfNull() {
+
+        Model::automaticallyEagerLoadRelationships();
+
+
+        $tag1 = Tag::create();
+
+        dump($tag1->post);
+
+        $tags = Tag::get();
+
+        foreach ($tags as $tag) {
+            $this->assertNull($tag->post);
+        }
+
+        Model::automaticallyEagerLoadRelationships(false);
+
+        DB::disableQueryLog();
+
+
+
+    }
 }
+
+class Tag extends Model
+{
+    public $timestamps = false;
+    protected $guarded = [];
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if($model->post){
+                $model->status = 'Todo';
+            }
+        });
+    }
+
+    public function post() {
+        return $this->belongsTo(Post::class);
+    }
+}
+
 
 class Comment extends Model
 {
@@ -255,6 +306,11 @@ class Post extends Model
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
     }
 }
 
