@@ -264,6 +264,12 @@ class Collection extends BaseCollection implements QueueableCollection
                 $model::class === $class;
         })->load($relation);
 
+        $this->map(function ($model) use($relation, $class) {
+            if(! is_null($model) && $model::class === $class && $model->getRelation($relation) === null) {
+                $model->unsetRelation($relation);
+            }
+        });
+
         if (empty($tuples)) {
             return;
         }

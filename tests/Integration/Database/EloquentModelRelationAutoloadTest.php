@@ -3,6 +3,8 @@
 namespace Illuminate\Tests\Integration\Database\EloquentModelRelationAutoloadTest;
 
 use DB;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -223,32 +225,38 @@ class EloquentModelRelationAutoloadTest extends DatabaseTestCase
         DB::disableQueryLog();
     }
 
-    public function testRelationAutoLoadIsRetriedIfNull() {
+    public function testRelationAutoLoadIsRetriedOnFactories() {
 
         Model::automaticallyEagerLoadRelationships();
 
+        $tag = Tag::factory()->create();
 
-        $tag1 = Tag::create();
+        $this->assertNull($tag->post);
 
-        dump($tag1->post);
+        $post = Post::factory()->create();
 
-        $tags = Tag::get();
+        $tag->post()->associate($post);
 
-        foreach ($tags as $tag) {
-            $this->assertNull($tag->post);
+
+        foreach(Tag::get() as $tag){
+            $this->assertInstanceOf(Post::class,$tag->post);;
         }
+    }
+}
 
-        Model::automaticallyEagerLoadRelationships(false);
+class TagFactory extends Factory {
+    protected $model = Tag::class;
 
-        DB::disableQueryLog();
-
-
-
+    public function definition()
+    {
+        return [];
     }
 }
 
 class Tag extends Model
 {
+    use HasFactory;
+
     public $timestamps = false;
     protected $guarded = [];
 
@@ -259,6 +267,11 @@ class Tag extends Model
                 $model->status = 'Todo';
             }
         });
+    }
+
+    protected static function newFactory()
+    {
+        return TagFactory::new();
     }
 
     public function post() {
@@ -272,7 +285,6 @@ class Comment extends Model
     public $timestamps = false;
 
     protected $guarded = [];
-
     public function parent()
     {
         return $this->belongsTo(self::class);
@@ -289,8 +301,18 @@ class Comment extends Model
     }
 }
 
+class PostFactory extends Factory {
+    protected $model = Post::class;
+
+    public function definition()
+    {
+        return [];
+    }
+}
 class Post extends Model
 {
+    use HasFactory;
+
     public $timestamps = false;
 
     public function comments()
@@ -306,6 +328,11 @@ class Post extends Model
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    protected static function newFactory()
+    {
+        return PostFactory::new();
     }
 
     public function tags()
