@@ -23,6 +23,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
+use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;
 use JsonSerializable;
@@ -37,6 +38,8 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
  */
 class Router implements BindingRegistrar, RegistrarContract
 {
+    use Conditionable;
+
     use Macroable {
         __call as macroCall;
     }
