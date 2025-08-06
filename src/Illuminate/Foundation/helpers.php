@@ -213,6 +213,18 @@ if (! function_exists('bcrypt')) {
     }
 }
 
+if (! function_exists('benchmark')) {
+    /**
+     * Get the benchmark instance.
+     *
+     * @return \Illuminate\Support\Benchmark
+     */
+    function benchmark()
+    {
+        return app(\Illuminate\Support\Benchmark::class);
+    }
+}
+
 if (! function_exists('broadcast')) {
     /**
      * Begin broadcasting an event.
