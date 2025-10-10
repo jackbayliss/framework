@@ -196,11 +196,12 @@ class PendingProcess
     /**
      * Disable output for the process.
      *
+     * @param bool $quietly
      * @return $this
      */
-    public function quietly()
+    public function quietly(bool $quietly = true)
     {
-        $this->quietly = true;
+        $this->quietly = $quietly;
 
         return $this;
     }
