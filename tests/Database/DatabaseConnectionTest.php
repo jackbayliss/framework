@@ -439,7 +439,7 @@ class DatabaseConnectionTest extends TestCase
                 $attempts++;
 
                 if ($attempts < 3) {
-                    throw new QueryException('', '', [], new Exception('SQLSTATE[HY000]: General error: 1047 Connection reset by peer'));
+                    throw new QueryException('conn', '', [], new Exception('SQLSTATE[HY000]: General error: 1047 Connection reset by peer'));
                 }
 
                 return 'success';
@@ -447,7 +447,7 @@ class DatabaseConnectionTest extends TestCase
 
             $result = (new ReflectionClass(Connection::class))
                 ->getMethod('tryAgainIfCausedByLostConnection')
-                ->invoke($connection, new QueryException('', '', [], new Exception('SQLSTATE[HY000]: General error: 1047 Connection reset by peer')), '', '', $callback);
+                ->invoke($connection, new QueryException('conn', '', [], new Exception('SQLSTATE[HY000]: General error: 1047 Connection reset by peer')), '', '', $callback);
 
             $this->assertEquals(3, $attempts);
             $this->assertEquals('success', $result);
