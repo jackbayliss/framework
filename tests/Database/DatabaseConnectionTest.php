@@ -422,6 +422,40 @@ class DatabaseConnectionTest extends TestCase
         }]);
     }
 
+    public function testRunMethodRetriesMultipleIfSetOnFailure()
+    {
+        try {
+            Connection::$retriesOnLostConnection = 3;
+
+            $connection = $this->getMockConnection();
+            $connection->setReconnector(function ($connection) {
+                $pdo = $this->createMock(DatabaseConnectionTestMockPDO::class);
+                $connection->setPdo($pdo);
+            });
+
+            $attempts = 0;
+
+            $callback = function () use (&$attempts) {
+                $attempts++;
+
+                if ($attempts < 3) {
+                    throw new QueryException('', '', [], new Exception('SQLSTATE[HY000]: General error: 1047 Connection reset by peer'));
+                }
+
+                return 'success';
+            };
+
+            $result = (new ReflectionClass(Connection::class))
+                ->getMethod('tryAgainIfCausedByLostConnection')
+                ->invoke($connection, new QueryException('', '', [], new Exception('SQLSTATE[HY000]: General error: 1047 Connection reset by peer')), '', '', $callback);
+
+            $this->assertEquals(3, $attempts);
+            $this->assertEquals('success', $result);
+        } finally {
+            Connection::$retriesOnLostConnection = 1;
+        }
+    }
+
     public function testRunMethodNeverRetriesIfWithinTransaction()
     {
         $this->expectException(QueryException::class);
