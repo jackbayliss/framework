@@ -25,7 +25,6 @@ use PDO;
 use PDOStatement;
 use RuntimeException;
 
-use Throwable;
 use function Illuminate\Support\enum_value;
 
 class Connection implements ConnectionInterface
@@ -969,14 +968,13 @@ class Connection implements ConnectionInterface
     /**
      * Handle a query exception that occurred during query execution.
      *
-     * @param \Illuminate\Database\QueryException $e
-     * @param string $query
-     * @param array $bindings
-     * @param \Closure $callback
+     * @param  \Illuminate\Database\QueryException  $e
+     * @param  string  $query
+     * @param  array  $bindings
+     * @param  \Closure  $callback
      * @return mixed
      *
      * @throws \Illuminate\Database\QueryException
-     * @throws Exception|Throwable
      */
     protected function tryAgainIfCausedByLostConnection(QueryException $e, $query, $bindings, Closure $callback)
     {
