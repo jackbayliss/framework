@@ -194,6 +194,28 @@ class NotificationSenderTest extends TestCase
         $sender->send($notifiable, new DummyNotificationWithViaQueues);
     }
 
+    public function testItCanSendQueuedNotificationsWithDefaultQueue()
+    {
+        $notifiable = new AnonymousNotifiable;
+        $manager = m::mock(ChannelManager::class);
+        $manager->shouldReceive('getContainer')->andReturn(app());
+        $manager->shouldReceive('resolveQueueFor')->andReturn('notification-queue');
+
+        $bus = m::mock(BusDispatcher::class);
+        $bus->shouldReceive('dispatch')
+            ->once()
+            ->withArgs(function ($job) {
+                return $job->queue === 'notification-queue' && $job->channels === ['mail'];
+            });
+
+        $events = m::mock(EventDispatcher::class);
+        $events->shouldReceive('listen')->once();
+
+        $sender = new NotificationSender($manager, $bus, $events);
+
+        $sender->send($notifiable, new DummyQueuedNotificationWithStringVia);
+    }
+
     public function testNotificationFailedSentWithoutHttpTransportException()
     {
         $this->expectException(TransportException::class);

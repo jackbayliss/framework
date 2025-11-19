@@ -9,6 +9,7 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\QueueManager;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -57,6 +58,25 @@ class BusDispatcherTest extends TestCase
         });
 
         $dispatcher->dispatch(new BusDispatcherTestSpecificQueueAndDelayCommand);
+    }
+    public function testCommandsAreDispatchedWithDefaultQueue()
+    {
+        $container = new Container;
+        $queueManager = m::mock(QueueManager::class);
+        $queueManager->shouldReceive('resolveQueueFor')->andReturn('high-priority');
+
+        $container->singleton('queue', function () use ($queueManager) {
+            return $queueManager;
+        });
+
+        $mock = m::mock(Queue::class);
+        $mock->shouldReceive('push')->once()->with(BusDispatcherQueueable::class, '', 'high-priority');
+
+        $dispatcher = new Dispatcher($container, function () use ($mock) {
+            return $mock;
+        });
+
+        $dispatcher->dispatch(new BusDispatcherQueueable);
     }
 
     public function testDispatchNowShouldNeverQueue()
@@ -145,6 +165,11 @@ class BusDispatcherTestSpecificQueueAndDelayCommand implements ShouldQueue
 {
     public $queue = 'foo';
     public $delay = 10;
+}
+
+class BusDispatcherQueueable implements ShouldQueue
+{
+   use Queueable;
 }
 
 class StandAloneCommand
