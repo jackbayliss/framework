@@ -59,6 +59,7 @@ class BusDispatcherTest extends TestCase
 
         $dispatcher->dispatch(new BusDispatcherTestSpecificQueueAndDelayCommand);
     }
+
     public function testCommandsAreDispatchedWithDefaultQueue()
     {
         $container = new Container;
