@@ -2,7 +2,7 @@
 
 namespace Illuminate\Support\Traits;
 
-trait ResolvesClassBasedDefaults
+trait ResolvesDefaultQueue
 {
     /**
      * The array of default queues by classes.

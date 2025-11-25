@@ -234,8 +234,6 @@ class Mailable implements MailableContract, Renderable
             ? $this->queue
             : $queue->resolveQueueFor($this);
 
-        $queueName = $queueName ?? $queue->resolveQueueFor($this);
-
         return $queue->connection($connection)->pushOn(
             $queueName ?: null, $this->newQueuedJob()
         );

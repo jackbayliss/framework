@@ -7,12 +7,12 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Notifications\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Notifications\Factory as FactoryContract;
 use Illuminate\Support\Manager;
-use Illuminate\Support\Traits\ResolvesClassBasedDefaults;
+use Illuminate\Support\Traits\ResolvesDefaultQueue;
 use InvalidArgumentException;
 
 class ChannelManager extends Manager implements DispatcherContract, FactoryContract
 {
-    use ResolvesClassBasedDefaults;
+    use ResolvesDefaultQueue;
     /**
      * The default channel used to deliver messages.
      *
