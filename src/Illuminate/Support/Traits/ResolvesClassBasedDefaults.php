@@ -4,7 +4,6 @@ namespace Illuminate\Support\Traits;
 
 trait ResolvesClassBasedDefaults
 {
-
     /**
      * The array of default queues by classes.
      *
@@ -34,18 +33,22 @@ trait ResolvesClassBasedDefaults
      */
     public function resolveQueueFor($instance)
     {
-        $class = get_class($instance);
+        if (empty($this->defaultQueues)) {
+            return null;
+        }
 
-        $candidates = array_merge([$class], class_parents($instance), class_implements($instance));
+        $classes = array_merge(
+            [get_class($instance)],
+            class_parents($instance),
+            class_implements($instance)
+        );
 
-        foreach ($candidates as $candidate) {
-            if (isset($this->defaultQueues[$candidate])) {
-                return $this->defaultQueues[$candidate];
+        foreach ($classes as $class) {
+            if (isset($this->defaultQueues[$class])) {
+                return $this->defaultQueues[$class];
             }
         }
 
         return null;
     }
-
-
 }
