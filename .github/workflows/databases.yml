@@ -2,9 +2,9 @@ name: databases
 
 on:
   push:
-    branches:
-      - master
-      - '*.x'
+#    branches:
+#      - master
+#      - '*.x'
   pull_request:
 
 jobs:
