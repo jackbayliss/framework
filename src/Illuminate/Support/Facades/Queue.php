@@ -22,8 +22,6 @@ use Illuminate\Support\Testing\Fakes\QueueFake;
  * @method static string getName(string|null $connection = null)
  * @method static \Illuminate\Contracts\Foundation\Application getApplication()
  * @method static \Illuminate\Queue\QueueManager setApplication(\Illuminate\Contracts\Foundation\Application $app)
- * @method static \Illuminate\Queue\QueueManager defaultQueueFor(string $class, string $queue)
- * @method static string|null resolveQueueFor(object $instance)
  * @method static int size(string|null $queue = null)
  * @method static mixed push(string|object $job, mixed $data = '', string|null $queue = null)
  * @method static mixed pushOn(string $queue, string|object $job, mixed $data = '')
