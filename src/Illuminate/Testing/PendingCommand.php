@@ -79,6 +79,21 @@ class PendingCommand
     protected $hasExecuted = false;
 
     /**
+     * Whether to display output to the console.
+     *
+     * @var bool
+     */
+    protected $debugOutput = false;
+
+
+    /**
+     * The mocked output.
+     *
+     * @var \Mockery\MockInterface|null
+     */
+    protected $mockedOutput = null;
+
+    /**
      * Create a new pending console command run.
      *
      * @param  \PHPUnit\Framework\TestCase  $test
@@ -471,6 +486,13 @@ class PendingCommand
             );
         }
 
+        if ($this->debugOutput && $this->mockedOutput) {
+            $output = $this->mockedOutput->fetch();
+            if (! empty($output)) {
+                echo $output;
+            }
+        }
+
         $this->verifyExpectations();
         $this->flushExpectations();
 
@@ -547,8 +569,10 @@ class PendingCommand
      */
     protected function mockConsoleOutput()
     {
+        $bufferedOutput = $this->createABufferedOutputMock();
+
         $mock = Mockery::mock(OutputStyle::class.'[askQuestion]', [
-            new ArrayInput($this->parameters), $this->createABufferedOutputMock(),
+            new ArrayInput($this->parameters), $bufferedOutput,
         ]);
 
         foreach ($this->test->expectedQuestions as $i => $question) {
@@ -574,6 +598,8 @@ class PendingCommand
         $this->app->bind(OutputStyle::class, function () use ($mock) {
             return $mock;
         });
+
+        $this->mockedOutput = $bufferedOutput;
 
         return $mock;
     }
