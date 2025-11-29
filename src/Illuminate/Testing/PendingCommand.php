@@ -460,6 +460,11 @@ class PendingCommand
     {
         $this->hasExecuted = true;
 
+        if ($this->debugOutput) {
+            $consoleOutput = new OutputStyle(new ArrayInput($this->parameters), new ConsoleOutput());
+            $this->app->make(Kernel::class)->call($this->command, $this->parameters, $consoleOutput);
+        }
+
         $mock = $this->mockConsoleOutput();
 
         try {
@@ -484,13 +489,6 @@ class PendingCommand
                 $this->unexpectedExitCode, $exitCode,
                 "Unexpected status code {$this->unexpectedExitCode} was received."
             );
-        }
-
-        if ($this->debugOutput && $this->mockedOutput) {
-            $output = $this->mockedOutput->fetch();
-            if (! empty($output)) {
-                echo $output;
-            }
         }
 
         $this->verifyExpectations();
