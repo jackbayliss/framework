@@ -3,6 +3,7 @@
 namespace Illuminate\Tests\Integration\Queue;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -192,7 +193,8 @@ class WorkCommandTest extends QueueTestCase
 
 //        Worker::$checkRestart = false;
 
-        Cache::spy();
+        $cache = Mockery::mock(Repository::class);
+        $cache->shouldNotReceive('get')->with('illuminate:queue:restart');
 
         Queue::push(new FirstJob);
 
@@ -201,8 +203,6 @@ class WorkCommandTest extends QueueTestCase
         ])->assertExitCode(0);
 
         $this->assertTrue(FirstJob::$ran);
-
-        Cache::spy()->shouldNotHaveReceived('get', ['illuminate:queue:restart']);
 
         Worker::$checkRestart = true;
     }
@@ -211,9 +211,10 @@ class WorkCommandTest extends QueueTestCase
     {
         $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
 
-//        Worker::$checkPaused = false;
+        Worker::$checkPaused = false;
 
-        Cache::spy();
+        $cache = Mockery::mock(Repository::class);
+        $cache->shouldNotReceive('get')->with(Mockery::pattern('/illuminate:queue:paused:.*/'));
 
         Queue::push(new FirstJob);
 
@@ -222,8 +223,6 @@ class WorkCommandTest extends QueueTestCase
         ])->assertExitCode(0);
 
         $this->assertTrue(FirstJob::$ran);
-
-        Cache::spy()->shouldNotHaveReceived('get', [Mockery::pattern('/illuminate:queue:paused:.*/')]);
 
         Worker::$checkPaused = true;
     }
