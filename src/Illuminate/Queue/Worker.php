@@ -758,10 +758,6 @@ class Worker
      */
     protected function queueShouldRestart($lastRestart)
     {
-        if (! static::$checkRestart) {
-            return false;
-        }
-
         return $this->getTimestampOfLastQueueRestart() != $lastRestart;
     }
 
@@ -772,6 +768,10 @@ class Worker
      */
     protected function getTimestampOfLastQueueRestart()
     {
+        if (! static::$checkRestart) {
+            return null;
+        }
+
         if ($this->cache) {
             return $this->cache->get('illuminate:queue:restart');
         }
