@@ -10,8 +10,10 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Queue\Worker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
+use Mockery;
 use Orchestra\Testbench\Attributes\WithMigration;
 use RuntimeException;
 
@@ -182,6 +184,48 @@ class WorkCommandTest extends QueueTestCase
         $this->assertFalse(SecondJob::$ran);
 
         Worker::$memoryExceededExitCode = null;
+    }
+
+    public function testCanDisableRestartCheck()
+    {
+        $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
+
+        Worker::$checkRestart = false;
+
+        Cache::spy();
+
+        Queue::push(new FirstJob);
+
+        $this->artisan('queue:work', [
+            '--max-jobs' => 1,
+        ])->assertExitCode(0);
+
+        $this->assertTrue(FirstJob::$ran);
+
+        Cache::spy()->shouldNotHaveReceived('get', ['illuminate:queue:restart']);
+
+        Worker::$checkRestart = true;
+    }
+
+    public function testCanDisablePauseCheck()
+    {
+        $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
+
+        Worker::$checkPaused = false;
+
+        Cache::spy();
+
+        Queue::push(new FirstJob);
+
+        $this->artisan('queue:work', [
+            '--max-jobs' => 1,
+        ])->assertExitCode(0);
+
+        $this->assertTrue(FirstJob::$ran);
+
+        Cache::spy()->shouldNotHaveReceived('get', [Mockery::pattern('/illuminate:queue:paused:.*/')]);
+
+        Worker::$checkRestart = true;
     }
 
     public function testFailedJobListenerOnlyRunsOnce()
