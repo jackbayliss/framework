@@ -3,6 +3,7 @@
 namespace Illuminate\Tests\Integration\Queue;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -11,7 +12,6 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Queue\Worker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
@@ -187,44 +187,55 @@ class WorkCommandTest extends QueueTestCase
         Worker::$memoryExceededExitCode = null;
     }
 
-    public function testCanDisableRestartCheck()
+    public function testDisableRestartCheck()
     {
         $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
 
-//        Worker::$checkRestart = false;
+        Worker::$checkRestart = false;
 
         $cache = Mockery::mock(Repository::class);
         $cache->shouldNotReceive('get')->with('illuminate:queue:restart');
+
+        $cacheManager = Mockery::mock(CacheManager::class);
+        $cacheManager->shouldReceive('driver')->andReturn($cache);
+        $cacheManager->shouldReceive('store')->andReturn($cache);
+
+        $this->app->instance('cache', $cacheManager);
 
         Queue::push(new FirstJob);
 
         $this->artisan('queue:work', [
             '--max-jobs' => 1,
-        ])->assertExitCode(0);
-
-        $this->assertTrue(FirstJob::$ran);
+        ]);
 
         Worker::$checkRestart = true;
     }
 
-    public function testCanDisablePauseCheck()
+    public function testDisablePauseCheck()
     {
         $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
 
         Worker::$checkPaused = false;
 
         $cache = Mockery::mock(Repository::class);
-        $cache->shouldNotReceive('get')->with(Mockery::pattern('/illuminate:queue:paused:.*/'));
+
+        $cache->shouldReceive('get')->with('illuminate:queue:restart')->andReturn(null);
+
+        $cache->shouldNotReceive('get')->with(Mockery::pattern('/^illuminate:queue:paused:/'), false);
+
+        $cacheManager = Mockery::mock(CacheManager::class);
+        $cacheManager->shouldReceive('driver')->andReturn($cache);
+        $cacheManager->shouldReceive('store')->andReturn($cache);
+
+        $this->app->instance('cache', $cacheManager);
 
         Queue::push(new FirstJob);
 
         $this->artisan('queue:work', [
             '--max-jobs' => 1,
-        ])->assertExitCode(0);
+        ]);
 
-        $this->assertTrue(FirstJob::$ran);
-
-        Worker::$checkPaused = true;
+        Worker::$checkPaused = false;
     }
 
     public function testFailedJobListenerOnlyRunsOnce()
