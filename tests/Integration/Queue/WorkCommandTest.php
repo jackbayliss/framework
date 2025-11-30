@@ -190,7 +190,7 @@ class WorkCommandTest extends QueueTestCase
     {
         $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
 
-        Worker::$checkRestart = false;
+//        Worker::$checkRestart = false;
 
         Cache::spy();
 
@@ -211,7 +211,7 @@ class WorkCommandTest extends QueueTestCase
     {
         $this->markTestSkippedWhenUsingQueueDrivers(['redis', 'beanstalkd']);
 
-        Worker::$checkPaused = false;
+//        Worker::$checkPaused = false;
 
         Cache::spy();
 
