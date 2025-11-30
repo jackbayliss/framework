@@ -107,6 +107,20 @@ class Worker
     public static $memoryExceededExitCode;
 
     /**
+     * Indicates if the worker should check for restart.
+     *
+     * @var bool
+     */
+    public static $checkRestart = true;
+
+    /**
+     * Indicates if the worker should check for paused queues.
+     *
+     * @var bool
+     */
+    public static $checkPaused = true;
+
+    /**
      * Create a new queue worker.
      *
      * @param  \Illuminate\Contracts\Queue\Factory  $manager
@@ -400,6 +414,10 @@ class Worker
      */
     protected function queuePaused($connectionName, $queue)
     {
+        if (! static::$checkPaused) {
+            return false;
+        }
+
         return $this->cache && (bool) $this->cache->get(
             "illuminate:queue:paused:{$connectionName}:{$queue}", false
         );
@@ -740,6 +758,10 @@ class Worker
      */
     protected function queueShouldRestart($lastRestart)
     {
+        if (! static::$checkRestart) {
+            return false;
+        }
+
         return $this->getTimestampOfLastQueueRestart() != $lastRestart;
     }
 
