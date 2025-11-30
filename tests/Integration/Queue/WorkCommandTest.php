@@ -225,7 +225,7 @@ class WorkCommandTest extends QueueTestCase
 
         Cache::spy()->shouldNotHaveReceived('get', [Mockery::pattern('/illuminate:queue:paused:.*/')]);
 
-        Worker::$checkRestart = true;
+        Worker::$checkPaused = true;
     }
 
     public function testFailedJobListenerOnlyRunsOnce()
