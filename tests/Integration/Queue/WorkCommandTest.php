@@ -206,6 +206,7 @@ class WorkCommandTest extends QueueTestCase
 
         $this->artisan('queue:work', [
             '--max-jobs' => 1,
+            '--stop-when-empty' => true,
         ]);
 
         Worker::$checkRestart = true;
@@ -233,6 +234,7 @@ class WorkCommandTest extends QueueTestCase
 
         $this->artisan('queue:work', [
             '--max-jobs' => 1,
+            '--stop-when-empty' => true,
         ]);
 
         Worker::$checkPaused = true;
