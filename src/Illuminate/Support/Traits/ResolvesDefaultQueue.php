@@ -5,13 +5,6 @@ namespace Illuminate\Support\Traits;
 trait ResolvesDefaultQueue
 {
     /**
-     * The array of default queues by classes.
-     *
-     * @var array
-     */
-    protected $defaultQueues = [];
-
-    /**
      * Register a default queue for a given class.
      *
      * @param  string  $class
@@ -20,7 +13,7 @@ trait ResolvesDefaultQueue
      */
     public function defaultQueueFor($class, $queue)
     {
-        $this->defaultQueues[$class] = $queue;
+        $this->app['queue.resolver']->register($class, $queue);
 
         return $this;
     }
@@ -33,22 +26,6 @@ trait ResolvesDefaultQueue
      */
     public function resolveQueueFor($instance)
     {
-        if (empty($this->defaultQueues)) {
-            return null;
-        }
-
-        $classes = array_merge(
-            [get_class($instance)],
-            class_parents($instance),
-            class_implements($instance)
-        );
-
-        foreach ($classes as $class) {
-            if (isset($this->defaultQueues[$class])) {
-                return $this->defaultQueues[$class];
-            }
-        }
-
-        return null;
+        return $this->app['queue.resolver']->resolve($instance);
     }
 }

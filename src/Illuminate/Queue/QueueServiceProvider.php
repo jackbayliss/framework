@@ -41,6 +41,7 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
         $this->registerManager();
         $this->registerConnection();
         $this->registerWorker();
+        $this->registerResolver();
         $this->registerListener();
         $this->registerFailedJobServices();
     }
@@ -202,6 +203,13 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         $manager->addConnector('redis', function () {
             return new RedisConnector($this->app['redis']);
+        });
+    }
+
+    protected function registerResolver()
+    {
+        $this->app->singleton('queue.resolver', function () {
+            return new QueueResolver;
         });
     }
 
