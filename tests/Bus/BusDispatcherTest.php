@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\QueueManager;
+use Illuminate\Queue\QueueResolver;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -63,11 +64,12 @@ class BusDispatcherTest extends TestCase
     public function testCommandsAreDispatchedWithDefaultQueue()
     {
         $container = new Container;
-        $queueManager = m::mock(QueueManager::class);
-        $queueManager->shouldReceive('resolveQueueFor')->andReturn('high-priority');
 
-        $container->singleton('queue', function () use ($queueManager) {
-            return $queueManager;
+        $queueResolver = m::mock(QueueResolver::class);
+        $queueResolver->shouldReceive('resolve')->andReturn('high-priority');
+
+        $container->singleton('queue.resolver', function () use ($queueResolver) {
+            return $queueResolver;
         });
 
         $mock = m::mock(Queue::class);
