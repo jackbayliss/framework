@@ -25,6 +25,9 @@ class BusDispatcherTest extends TestCase
     public function testCommandsThatShouldQueueIsQueued()
     {
         $container = new Container;
+        $container->instance('queue.resolver', $queueResolver = m::mock());
+        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);
             $mock->shouldReceive('push')->once();
@@ -38,6 +41,9 @@ class BusDispatcherTest extends TestCase
     public function testCommandsThatShouldQueueIsQueuedUsingCustomHandler()
     {
         $container = new Container;
+        $container->instance('queue.resolver', $queueResolver = m::mock());
+        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);
             $mock->shouldReceive('push')->once();
@@ -51,6 +57,9 @@ class BusDispatcherTest extends TestCase
     public function testCommandsThatShouldQueueIsQueuedUsingCustomQueueAndDelay()
     {
         $container = new Container;
+        $container->instance('queue.resolver', $queueResolver = m::mock());
+        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);
             $mock->shouldReceive('later')->once()->with(10, m::type(BusDispatcherTestSpecificQueueAndDelayCommand::class), '', 'foo');
@@ -64,13 +73,8 @@ class BusDispatcherTest extends TestCase
     public function testCommandsAreDispatchedWithDefaultQueue()
     {
         $container = new Container;
-
-        $queueResolver = m::mock(QueueResolver::class);
+        $container->instance('queue.resolver', $queueResolver = m::mock());
         $queueResolver->shouldReceive('resolve')->andReturn('high-priority');
-
-        $container->singleton('queue.resolver', function () use ($queueResolver) {
-            return $queueResolver;
-        });
 
         $mock = m::mock(Queue::class);
         $mock->shouldReceive('push')->once()->with(BusDispatcherQueueable::class, '', 'high-priority');
@@ -122,6 +126,9 @@ class BusDispatcherTest extends TestCase
                 ],
             ]);
         });
+        $container->instance('queue.resolver', $queueResolver = m::mock());
+        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        Container::setInstance($container);
 
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);

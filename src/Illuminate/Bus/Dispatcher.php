@@ -239,9 +239,7 @@ class Dispatcher implements QueueingDispatcher
      */
     protected function pushCommandToQueue($queue, $command)
     {
-        $queueName = $command->queue ?? ($this->container->bound('queue.resolver')
-            ? $this->container['queue.resolver']->resolve($command)
-            : null);
+        $queueName = $command->queue ?? $this->container['queue.resolver']->resolve($command);
 
         if (isset($command->delay)) {
             return $queue->later($command->delay, $command, queue: $queueName);
