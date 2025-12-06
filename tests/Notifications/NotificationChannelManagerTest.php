@@ -156,7 +156,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $queueResolver = m::mock(QueueResolver::class);
+        $container->instance(QueueResolver::class, $queueResolver = m::mock());
         $queueResolver->shouldReceive('resolve')->andReturn(null);
         $container->instance('queue.resolver', $queueResolver);
         $bus->shouldReceive('dispatch')->with(m::type(SendQueuedNotifications::class));
@@ -173,7 +173,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $queueResolver = m::mock(QueueResolver::class);
+        $container->instance(QueueResolver::class, $queueResolver = m::mock());
         $queueResolver->shouldReceive('resolve')->andReturn(null);
         $container->instance('queue.resolver', $queueResolver);
         $bus->shouldReceive('dispatch')->with(m::type(TestSendQueuedNotifications::class));
@@ -196,7 +196,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $queueResolver = m::mock(QueueResolver::class);
+        $container->instance(QueueResolver::class, $queueResolver = m::mock());
         $queueResolver->shouldReceive('resolve')->andReturn(null);
         $container->instance('queue.resolver', $queueResolver);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
@@ -225,7 +225,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $queueResolver = m::mock(QueueResolver::class);
+        $container->instance(QueueResolver::class, $queueResolver = m::mock());
         $queueResolver->shouldReceive('resolve')->andReturn(null);
         $container->instance('queue.resolver', $queueResolver);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
@@ -252,7 +252,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $queueResolver = m::mock(QueueResolver::class);
+        $container->instance(QueueResolver::class, $queueResolver = m::mock());
         $queueResolver->shouldReceive('resolve')->andReturn(null);
         $container->instance('queue.resolver', $queueResolver);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupSet) {
