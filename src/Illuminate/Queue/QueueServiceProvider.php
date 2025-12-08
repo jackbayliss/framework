@@ -396,6 +396,7 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
             'queue.connection',
             'queue.failer',
             'queue.listener',
+            'queue.resolver',
             'queue.worker',
         ];
     }
