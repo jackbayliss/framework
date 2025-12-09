@@ -105,6 +105,11 @@ trait InteractsWithTestCaseLifecycle
         $this->setUpHasRun = true;
     }
 
+    protected function tearDownImmediately()
+    {
+        return false;
+    }
+
     /**
      * Clean up the testing environment before the next test.
      *
@@ -235,7 +240,11 @@ trait InteractsWithTestCaseLifecycle
             }
 
             if (method_exists($this, $method = 'tearDown'.class_basename($trait))) {
-                $this->beforeApplicationDestroyed(fn () => $this->{$method}());
+                if ($this->tearDownImmediately()) {
+                    $this->{$method}();
+                } else {
+                    $this->beforeApplicationDestroyed(fn () => $this->{$method}());
+                }
             }
         }
 
