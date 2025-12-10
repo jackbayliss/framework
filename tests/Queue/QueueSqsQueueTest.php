@@ -99,7 +99,6 @@ class QueueSqsQueueTest extends TestCase
                 'ApproximateNumberOfMessages' => 1,
             ],
         ]);
-
     }
 
     protected function createSpyContainer()
