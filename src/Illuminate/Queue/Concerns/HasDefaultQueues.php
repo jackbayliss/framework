@@ -5,7 +5,7 @@ namespace Illuminate\Queue\Concerns;
 trait HasDefaultQueues
 {
     /**
-     * Set the default queue(s) for given class(es).
+     * Set the default queues for the given classes.
      *
      * @param  string|array  $class
      * @param  string|null  $queue
