@@ -24,7 +24,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $container->instance('queue.defaults', $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);
@@ -40,7 +40,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $container->instance('queue.defaults', $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);
@@ -56,7 +56,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $container->instance('queue.defaults', $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $dispatcher = new Dispatcher($container, function () {
             $mock = m::mock(Queue::class);
@@ -72,7 +72,7 @@ class BusDispatcherTest extends TestCase
     {
         $container = new Container;
         $container->instance('queue.defaults', $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn('high-priority');
+        $queueResolver->shouldReceive('get')->andReturn('high-priority');
 
         $mock = m::mock(Queue::class);
         $mock->shouldReceive('push')->once()->with(BusDispatcherQueueable::class, '', 'high-priority');
@@ -125,7 +125,7 @@ class BusDispatcherTest extends TestCase
             ]);
         });
         $container->instance('queue.defaults', $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
 
         $dispatcher = new Dispatcher($container, function () {

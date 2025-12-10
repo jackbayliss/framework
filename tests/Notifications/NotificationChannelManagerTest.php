@@ -156,8 +156,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(QueueDefault::class, $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $container->instance(QueueDefaults::class, $queueResolver = m::mock());
+        $queueResolver->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueResolver);
         $bus->shouldReceive('dispatch')->with(m::type(SendQueuedNotifications::class));
         Container::setInstance($container);
@@ -173,8 +173,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(QueueDefault::class, $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $container->instance(QueueDefaults::class, $queueResolver = m::mock());
+        $queueResolver->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueResolver);
         $bus->shouldReceive('dispatch')->with(m::type(TestSendQueuedNotifications::class));
         $container->bind(SendQueuedNotifications::class, TestSendQueuedNotifications::class);
@@ -196,8 +196,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(QueueDefault::class, $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $container->instance(QueueDefaults::class, $queueResolver = m::mock());
+        $queueResolver->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueResolver);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
@@ -225,8 +225,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(QueueDefault::class, $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $container->instance(QueueDefaults::class, $queueResolver = m::mock());
+        $queueResolver->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueResolver);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
@@ -252,8 +252,8 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(QueueDefault::class, $queueResolver = m::mock());
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $container->instance(QueueDefaults::class, $queueResolver = m::mock());
+        $queueResolver->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueResolver);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupSet) {
             $this->assertInstanceOf(SendQueuedNotifications::class, $job);
@@ -287,7 +287,7 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->shouldReceive('listen')->once();
@@ -312,7 +312,7 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->shouldReceive('listen')->once();
@@ -340,7 +340,7 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->shouldReceive('listen')->once();
@@ -362,7 +362,7 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->shouldReceive('listen')->once();
@@ -385,7 +385,7 @@ class NotificationChannelManagerTest extends TestCase
 
             return true;
         });
-        $queueResolver->shouldReceive('resolve')->andReturn(null);
+        $queueResolver->shouldReceive('get')->andReturn(null);
         Container::setInstance($container);
         $manager = m::mock(ChannelManager::class.'[driver]', [$container]);
         $events->shouldReceive('listen')->once();
