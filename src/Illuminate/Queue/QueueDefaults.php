@@ -12,7 +12,7 @@ class QueueDefaults
     protected $defaults = [];
 
     /**
-     * Set the default queues for the given classes
+     * Set the default queues for the given classes.
      *
      * @param  string|array  $class
      * @param  string|null  $queue
