@@ -9,8 +9,6 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\QueueManager;
-use Illuminate\Queue\QueueRouter;
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

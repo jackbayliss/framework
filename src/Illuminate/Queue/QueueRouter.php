@@ -12,40 +12,55 @@ class QueueRouter
     protected $routes = [];
 
     /**
-     * Register a default queue for a given class.
+     * Register a queue route for a given class.
      *
      * @param  string  $class
      * @param  string  $queue
      * @return $this
      */
-    public function register($class, $queue)
+    public function route($class, $queue)
     {
-        $this->defaultQueues[$class] = $queue;
+        $this->routes[$class] = $queue;
 
         return $this;
     }
 
     /**
-     * Resolve the queue for a given instance.
+     * Register multiple queue routes.
      *
-     * @param  object  $instance
+     * @param  array  $routes
+     * @return $this
+     */
+    public function routes(array $routes)
+    {
+        foreach ($routes as $class => $queue) {
+            $this->route($class, $queue);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Resolve the queue for a given queueable instance.
+     *
+     * @param  object  $queueable
      * @return string|null
      */
-    public function resolve($instance)
+    public function resolve($queueable)
     {
-        if (empty($this->defaultQueues)) {
+        if (empty($this->routes)) {
             return null;
         }
 
         $classes = array_merge(
-            [get_class($instance)],
-            class_parents($instance) ?: [],
-            class_implements($instance) ?: []
+            [get_class($queueable)],
+            class_parents($queueable) ?: [],
+            class_implements($queueable) ?: []
         );
 
         foreach ($classes as $class) {
-            if (isset($this->defaultQueues[$class])) {
-                return $this->defaultQueues[$class];
+            if (isset($this->routes[$class])) {
+                return $this->routes[$class];
             }
         }
 
@@ -53,12 +68,12 @@ class QueueRouter
     }
 
     /**
-     * Get all registered default queues.
+     * Get all registered queue routes.
      *
      * @return array
      */
-    public function getDefaultQueues()
+    public function getRoutes()
     {
-        return $this->defaultQueues;
+        return $this->routes;
     }
 }

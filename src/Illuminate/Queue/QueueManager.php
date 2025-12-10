@@ -127,22 +127,29 @@ class QueueManager implements FactoryContract, MonitorContract
      * @param  string  $queue
      * @return $this
      */
-    public function defaultQueueFor($class, $queue)
+    /**
+     * Register a queue route for a given class.
+     *
+     * @param  string  $class
+     * @param  string  $queue
+     * @return $this
+     */
+    public function route($class, $queue)
     {
-        $this->app['queue.router']->register($class, $queue);
+        $this->app['queue.router']->route($class, $queue);
 
         return $this;
     }
 
     /**
-     * Resolve the queue for a given instance.
+     * Resolve the queue for a given queueable instance.
      *
-     * @param  object  $instance
+     * @param  object  $queueable
      * @return string|null
      */
-    public function resolveQueueFor($instance)
+    public function resolveQueue($queueable)
     {
-        return $this->app['queue.router']->resolve($instance);
+        return $this->app['queue.router']->resolve($queueable);
     }
 
     /**
