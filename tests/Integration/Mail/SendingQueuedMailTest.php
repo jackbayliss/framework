@@ -33,7 +33,7 @@ class SendingQueuedMailTest extends TestCase
     {
         Queue::fake();
 
-        Queue::route(Mailable::class, 'mail-queue');
+        Queue::defaultQueue(Mailable::class, 'mail-queue');
 
         Mail::to('test@mail.com')->queue(new SendingQueuedMailTestMail);
 
