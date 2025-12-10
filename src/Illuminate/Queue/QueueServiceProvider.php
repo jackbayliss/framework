@@ -208,8 +208,8 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
 
     protected function registerResolver()
     {
-        $this->app->singleton('queue.resolver', function () {
-            return new QueueResolver;
+        $this->app->singleton('queue.router', function () {
+            return new QueueRouter;
         });
     }
 
@@ -396,7 +396,7 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
             'queue.connection',
             'queue.failer',
             'queue.listener',
-            'queue.resolver',
+            'queue.router',
             'queue.worker',
         ];
     }

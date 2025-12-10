@@ -170,7 +170,7 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
      */
     public function defaultQueueFor($class, $queue)
     {
-        $this->container['queue.resolver']->register($class, $queue);
+        $this->container['queue.router']->register($class, $queue);
 
         return $this;
     }
@@ -183,6 +183,6 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
      */
     public function resolveQueueFor($instance)
     {
-        return $this->container['queue.resolver']->resolve($instance);
+        return $this->container['queue.router']->resolve($instance);
     }
 }

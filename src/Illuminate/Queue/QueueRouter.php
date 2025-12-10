@@ -2,14 +2,14 @@
 
 namespace Illuminate\Queue;
 
-class QueueResolver
+class QueueRouter
 {
     /**
      * The mapping of class names to their default queues.
      *
      * @var array
      */
-    protected $defaultQueues = [];
+    protected $routes = [];
 
     /**
      * Register a default queue for a given class.

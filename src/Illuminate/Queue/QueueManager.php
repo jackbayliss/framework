@@ -129,7 +129,7 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     public function defaultQueueFor($class, $queue)
     {
-        $this->app['queue.resolver']->register($class, $queue);
+        $this->app['queue.router']->register($class, $queue);
 
         return $this;
     }
@@ -142,7 +142,7 @@ class QueueManager implements FactoryContract, MonitorContract
      */
     public function resolveQueueFor($instance)
     {
-        return $this->app['queue.resolver']->resolve($instance);
+        return $this->app['queue.router']->resolve($instance);
     }
 
     /**
