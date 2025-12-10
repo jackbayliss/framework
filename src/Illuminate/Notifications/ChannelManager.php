@@ -162,27 +162,28 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
     }
 
     /**
-     * Register a queue route for a given class.
+    /**
+     * Set the default queues for the given classes.
      *
-     * @param  string  $class
-     * @param  string  $queue
+     * @param  string|array  $class
+     * @param  string|null  $queue
      * @return $this
      */
-    public function route($class, $queue)
+    public function defaultQueue($class, $queue = null)
     {
-        $this->container['queue.router']->route($class, $queue);
+        $this->container['queue.defaults']->set($class, $queue);
 
         return $this;
     }
 
     /**
-     * Resolve the queue for a given queueable instance.
+     * Get the default queue for a given queueable instance.
      *
      * @param  object  $queueable
      * @return string|null
      */
-    public function resolveQueue($queueable)
+    public function getDefaultQueue($queueable)
     {
-        return $this->container['queue.router']->resolve($queueable);
+        return $this->container['queue.defaults']->get($queueable);
     }
 }
