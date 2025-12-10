@@ -5,6 +5,7 @@ namespace Illuminate\Queue;
 use Closure;
 use Illuminate\Contracts\Queue\Factory as FactoryContract;
 use Illuminate\Contracts\Queue\Monitor as MonitorContract;
+use Illuminate\Queue\Concerns\HasDefaultQueues;
 use InvalidArgumentException;
 
 /**
@@ -12,6 +13,7 @@ use InvalidArgumentException;
  */
 class QueueManager implements FactoryContract, MonitorContract
 {
+    use HasDefaultQueues;
     /**
      * The application instance.
      *
@@ -121,28 +123,13 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
-     * Set the default queues for the given classes.
+     * Get the queue defaults instance.
      *
-     * @param  string|array  $class
-     * @param  string|null  $queue
-     * @return $this
+     * @return \Illuminate\Queue\QueueDefaults
      */
-    public function defaultQueue($class, $queue = null)
+    protected function getQueueDefaults()
     {
-        $this->app['queue.defaults']->set($class, $queue);
-
-        return $this;
-    }
-
-    /**
-     * Get the default queue for a given queueable instance.
-     *
-     * @param  object  $queueable
-     * @return string|null
-     */
-    public function getDefaultQueue($queueable)
-    {
-        return $this->app['queue.defaults']->get($queueable);
+        return $this->app['queue.defaults'];
     }
 
     /**
