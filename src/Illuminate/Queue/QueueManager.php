@@ -121,13 +121,6 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
-     * Register a default queue for a given class.
-     *
-     * @param  string  $class
-     * @param  string  $queue
-     * @return $this
-     */
-    /**
      * Register a queue route for a given class.
      *
      * @param  string  $class
