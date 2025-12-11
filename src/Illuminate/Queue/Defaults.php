@@ -2,7 +2,7 @@
 
 namespace Illuminate\Queue;
 
-class QueueDefaults
+class Defaults
 {
     /**
      * The mapping of class names to their default queues.

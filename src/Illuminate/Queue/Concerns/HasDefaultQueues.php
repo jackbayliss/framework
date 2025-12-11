@@ -32,7 +32,7 @@ trait HasDefaultQueues
     /**
      * Get the queue defaults instance.
      *
-     * @return \Illuminate\Queue\QueueDefaults
+     * @return \Illuminate\Queue\Defaults
      */
     abstract protected function getQueueDefaults();
 }

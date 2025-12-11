@@ -126,7 +126,7 @@ class QueueManager implements FactoryContract, MonitorContract
     /**
      * Get the queue defaults instance.
      *
-     * @return \Illuminate\Queue\QueueDefaults
+     * @return \Illuminate\Queue\Defaults
      */
     protected function getQueueDefaults()
     {

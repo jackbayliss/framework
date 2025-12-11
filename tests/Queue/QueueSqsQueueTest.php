@@ -8,7 +8,7 @@ use Illuminate\Bus\Dispatcher;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Bus\Dispatcher as DispatcherContract;
 use Illuminate\Queue\Jobs\SqsJob;
-use Illuminate\Queue\QueueDefaults;
+use Illuminate\Queue\Defaults;
 use Illuminate\Queue\SqsQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -110,7 +110,7 @@ class QueueSqsQueueTest extends TestCase
             ->andReturn(true);
         $container->shouldReceive('offsetGet')
             ->with('queue.defaults')
-            ->andReturn(new QueueDefaults());
+            ->andReturn(new Defaults());
 
         return $container;
     }
