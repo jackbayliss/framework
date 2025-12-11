@@ -113,6 +113,18 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
     }
 
     /**
+     * Register the default queues.
+     *
+     * @return void
+     */
+    protected function registerDefaults()
+    {
+        $this->app->singleton('queue.defaults', function () {
+            return new QueueDefaults;
+        });
+    }
+
+    /**
      * Register the Null queue connector.
      *
      * @param  \Illuminate\Queue\QueueManager  $manager
@@ -203,13 +215,6 @@ class QueueServiceProvider extends ServiceProvider implements DeferrableProvider
     {
         $manager->addConnector('redis', function () {
             return new RedisConnector($this->app['redis']);
-        });
-    }
-
-    protected function registerDefaults()
-    {
-        $this->app->singleton('queue.defaults', function () {
-            return new QueueDefaults;
         });
     }
 
