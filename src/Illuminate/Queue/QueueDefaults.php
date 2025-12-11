@@ -14,20 +14,12 @@ class QueueDefaults
     /**
      * Set the default queues for the given classes.
      *
-     * @param  string|array  $class
-     * @param  string|null  $queue
+     * @param  class-string  $class
+     * @param  string  $queue
      * @return $this
      */
     public function set($class, $queue)
     {
-        if (is_array($class)) {
-            foreach ($class as $key => $value) {
-                $this->defaults[$key] = $value;
-            }
-
-            return $this;
-        }
-
         $this->defaults[$class] = $queue;
 
         return $this;

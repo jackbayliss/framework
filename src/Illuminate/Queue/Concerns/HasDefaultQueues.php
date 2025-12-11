@@ -5,13 +5,13 @@ namespace Illuminate\Queue\Concerns;
 trait HasDefaultQueues
 {
     /**
-     * Set the default queues for the given class.
+     * Set multiple default queues at once.
      *
-     * @param  string|array  $class
-     * @param  string|null  $queue
+     * @param  class-string  $class
+     * @param  string  $queue
      * @return $this
      */
-    public function defaultQueue($class, $queue = null)
+    public function defaultQueue($class, $queue)
     {
         $this->getQueueDefaults()->set($class, $queue);
 
@@ -21,7 +21,7 @@ trait HasDefaultQueues
     /**
      * Set the default queues for the given classes.
      *
-     * @param  $queues
+     * @param  array<class-string, string>  $queues
      * @return $this
      */
     public function defaultQueues($queues)
