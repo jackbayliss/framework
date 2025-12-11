@@ -14,6 +14,7 @@ use InvalidArgumentException;
 class QueueManager implements FactoryContract, MonitorContract
 {
     use HasDefaultQueues;
+
     /**
      * The application instance.
      *

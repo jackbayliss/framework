@@ -18,6 +18,7 @@ use RuntimeException;
 class Dispatcher implements QueueingDispatcher
 {
     use HasDefaultQueues;
+
     /**
      * The container implementation.
      *
