@@ -5,7 +5,7 @@ namespace Illuminate\Queue\Concerns;
 trait HasDefaultQueues
 {
     /**
-     * Set the default queues for the given classes.
+     * Set the default queues for the given class.
      *
      * @param  string|array  $class
      * @param  string|null  $queue
@@ -14,6 +14,19 @@ trait HasDefaultQueues
     public function defaultQueue($class, $queue = null)
     {
         $this->getQueueDefaults()->set($class, $queue);
+
+        return $this;
+    }
+
+    /**
+     * Set the default queues for the given classes.
+     *
+     * @param  $queues
+     * @return $this
+     */
+    public function defaultQueues($queues)
+    {
+        $this->getQueueDefaults()->setMany($queues);
 
         return $this;
     }
@@ -32,7 +45,7 @@ trait HasDefaultQueues
     /**
      * Get the queue defaults instance.
      *
-     * @return \Illuminate\Queue\Defaults
+     * @return \Illuminate\Queue\QueueDefaults
      */
     abstract protected function getQueueDefaults();
 }

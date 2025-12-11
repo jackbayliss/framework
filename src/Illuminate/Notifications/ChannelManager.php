@@ -166,7 +166,7 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
     /**
      * Get the queue defaults instance.
      *
-     * @return \Illuminate\Queue\Defaults
+     * @return \Illuminate\Queue\QueueDefaults
      */
     protected function getQueueDefaults()
     {

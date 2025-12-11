@@ -2,7 +2,7 @@
 
 namespace Illuminate\Queue;
 
-class Defaults
+class QueueDefaults
 {
     /**
      * The mapping of class names to their default queues.
@@ -34,6 +34,19 @@ class Defaults
     }
 
     /**
+     * Set multiple default queues at once.
+     *
+     * @param  array<class-string, string>  $defaults
+     * @return $this
+     */
+    public function setMany(array $defaults)
+    {
+        $this->defaults = array_merge($this->defaults, $defaults);
+
+        return $this;
+    }
+
+    /**
      * Get the default queue for a given queueable instance.
      *
      * @param  object  $queueable
@@ -48,7 +61,8 @@ class Defaults
         $classes = array_merge(
             [get_class($queueable)],
             class_parents($queueable) ?: [],
-            class_implements($queueable) ?: []
+            class_implements($queueable) ?: [],
+            class_uses_recursive($queueable)
         );
 
         foreach ($classes as $class) {

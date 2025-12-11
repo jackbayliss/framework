@@ -16,7 +16,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\SendQueuedNotifications;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Defaults;
+use Illuminate\Queue\QueueDefaults;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Laravel\SerializableClosure\SerializableClosure;
@@ -156,7 +156,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(Defaults::class, $queueDefaults = m::mock());
+        $container->instance(QueueDefaults::class, $queueDefaults = m::mock());
         $queueDefaults->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueDefaults);
         $bus->shouldReceive('dispatch')->with(m::type(SendQueuedNotifications::class));
@@ -173,7 +173,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(Defaults::class, $queueDefaults = m::mock());
+        $container->instance(QueueDefaults::class, $queueDefaults = m::mock());
         $queueDefaults->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueDefaults);
         $bus->shouldReceive('dispatch')->with(m::type(TestSendQueuedNotifications::class));
@@ -196,7 +196,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(Defaults::class, $queueDefaults = m::mock());
+        $container->instance(QueueDefaults::class, $queueDefaults = m::mock());
         $queueDefaults->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueDefaults);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
@@ -225,7 +225,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(Defaults::class, $queueDefaults = m::mock());
+        $container->instance(QueueDefaults::class, $queueDefaults = m::mock());
         $queueDefaults->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueDefaults);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupId) {
@@ -252,7 +252,7 @@ class NotificationChannelManagerTest extends TestCase
         $container->instance('config', ['app.name' => 'Name', 'app.logo' => 'Logo']);
         $container->instance(Dispatcher::class, $events = m::mock());
         $container->instance(Bus::class, $bus = m::mock());
-        $container->instance(Defaults::class, $queueDefaults = m::mock());
+        $container->instance(QueueDefaults::class, $queueDefaults = m::mock());
         $queueDefaults->shouldReceive('get')->andReturn(null);
         $container->instance('queue.defaults', $queueDefaults);
         $bus->shouldReceive('dispatch')->twice()->withArgs(function ($job) use ($mockedMessageGroupSet) {
