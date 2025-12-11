@@ -31,7 +31,7 @@ class QueueDefaultsTest extends TestCase
         $defaults->setMany([
             BaseNotification::class => 'notifications',
             CustomTrait::class => 'jobs',
-            Payment::class => 'payments',
+            PaymentContract::class => 'payments',
         ]);
 
         $this->assertSame('notifications', $defaults->get(new FinanceNotification));
