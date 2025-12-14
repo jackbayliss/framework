@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\PendingChain;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Queue\Concerns\ResolvesDefaultQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Jobs\SyncJob;
 use Illuminate\Support\Collection;
@@ -16,6 +17,8 @@ use RuntimeException;
 
 class Dispatcher implements QueueingDispatcher
 {
+    use ResolvesDefaultQueue;
+
     /**
      * The container implementation.
      *
@@ -239,7 +242,7 @@ class Dispatcher implements QueueingDispatcher
      */
     protected function pushCommandToQueue($queue, $command)
     {
-        $queueName = $command->queue ?? $this->container['queue.defaults']->get($command);
+        $queueName = $command->queue ?? $this->resolveDefaultQueue($command);
 
         if (isset($command->delay)) {
             return $queue->later($command->delay, $command, queue: $queueName);
@@ -314,5 +317,10 @@ class Dispatcher implements QueueingDispatcher
         $this->allowsDispatchingAfterResponses = false;
 
         return $this;
+    }
+
+    protected function queueDefaults()
+    {
+        return $this->container['queue.defaults'];
     }
 }

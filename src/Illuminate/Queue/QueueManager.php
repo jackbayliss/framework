@@ -119,6 +119,32 @@ class QueueManager implements FactoryContract, MonitorContract
     {
         $this->app['events']->listen(Events\WorkerStopping::class, $callback);
     }
+    /**
+     * Set multiple default queues at once.
+     *
+     * @param  class-string  $class
+     * @param  string  $queue
+     * @return $this
+     */
+    public function defaultQueue($class, $queue)
+    {
+        $this->app['queue.defaults']->set($class, $queue);
+
+        return $this;
+    }
+
+    /**
+     * Set the default queues for the given classes.
+     *
+     * @param  array<class-string, string>  $queues
+     * @return $this
+     */
+    public function defaultQueues($queues)
+    {
+        $this->app['queue.defaults']->setMany($queues);
+
+        return $this;
+    }
 
     /**
      * Determine if the driver is connected.
@@ -198,33 +224,6 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
-     * Set the default queue for a given class.
-     *
-     * @param  string  $class
-     * @param  string  $queue
-     * @return $this
-     */
-    public function defaultQueue($class, $queue)
-    {
-        $this->app['queue.defaults']->set($class, $queue);
-
-        return $this;
-    }
-
-    /**
-     * Set multiple default queues at once.
-     *
-     * @param  array<class-string, string>  $queues
-     * @return $this
-     */
-    public function defaultQueues($queues)
-    {
-        $this->app['queue.defaults']->setMany($queues);
-
-        return $this;
-    }
-
-    /**
      * Pause a queue by its connection and name.
      *
      * @param  string  $connection
@@ -279,19 +278,6 @@ class QueueManager implements FactoryContract, MonitorContract
         return (bool) $this->app['cache']
             ->store()
             ->get("illuminate:queue:paused:{$connection}:{$queue}", false);
-    }
-
-    /**
-     * Indicate that queue workers should not poll for restart or pause signals.
-     *
-     * This prevents the workers from hitting the application cache to determine if they need to pause or restart.
-     *
-     * @return void
-     */
-    public function withoutInterruptionPolling()
-    {
-        Worker::$restartable = false;
-        Worker::$pausable = false;
     }
 
     /**
