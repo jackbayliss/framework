@@ -5,7 +5,6 @@ namespace Illuminate\Queue;
 use Closure;
 use Illuminate\Contracts\Queue\Factory as FactoryContract;
 use Illuminate\Contracts\Queue\Monitor as MonitorContract;
-use Illuminate\Queue\Concerns\HasDefaultQueues;
 use InvalidArgumentException;
 
 /**
@@ -13,8 +12,6 @@ use InvalidArgumentException;
  */
 class QueueManager implements FactoryContract, MonitorContract
 {
-    use HasDefaultQueues;
-
     /**
      * The application instance.
      *
