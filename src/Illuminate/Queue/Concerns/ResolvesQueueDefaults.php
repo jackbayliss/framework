@@ -10,7 +10,7 @@ trait ResolvesQueueDefaults
      * @param  object  $queueable
      * @return string|null
      */
-    protected function resolveDefaultQueue($queueable)
+    public function resolveDefaultQueue($queueable)
     {
         return $this->queueDefaults()->get($queueable);
     }
