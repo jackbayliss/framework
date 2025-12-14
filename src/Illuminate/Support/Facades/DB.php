@@ -17,6 +17,7 @@ use Illuminate\Database\Console\WipeCommand;
  * @method static void disconnect(\UnitEnum|string|null $name = null)
  * @method static \Illuminate\Database\Connection reconnect(\UnitEnum|string|null $name = null)
  * @method static mixed usingConnection(\UnitEnum|string $name, callable $callback)
+ * @method static mixed testFacaade(\UnitEnum|string $name, callable $callback)
  * @method static string getDefaultConnection()
  * @method static void setDefaultConnection(string $name)
  * @method static string[] supportedDrivers()
