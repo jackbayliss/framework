@@ -351,6 +351,27 @@ class DatabaseManager implements ConnectionResolverInterface
         } finally {
             $this->setDefaultConnection($previousName);
         }
+
+    }
+
+    /**
+     * Set the default database connection for the callback execution.
+     *
+     * @param  \UnitEnum|string  $name
+     * @param  callable  $callback
+     * @return mixed
+     */
+    public function testFacaade($name, callable $callback)
+    {
+        $previousName = $this->getDefaultConnection();
+
+        $this->setDefaultConnection($name = enum_value($name));
+
+        try {
+            return $callback();
+        } finally {
+            $this->setDefaultConnection($previousName);
+        }
     }
 
     /**
