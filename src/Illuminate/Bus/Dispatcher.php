@@ -319,6 +319,11 @@ class Dispatcher implements QueueingDispatcher
         return $this;
     }
 
+    /**
+     * Get the queue defaults instance.
+     *
+     * @return \Illuminate\Queue\QueueDefaults
+     */
     protected function queueDefaults()
     {
         return $this->container['queue.defaults'];
