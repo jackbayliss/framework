@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\PendingChain;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Queue\Concerns\ResolvesDefaultQueue;
+use Illuminate\Queue\Concerns\ResolvesQueueDefaults;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Jobs\SyncJob;
 use Illuminate\Support\Collection;
@@ -17,7 +17,7 @@ use RuntimeException;
 
 class Dispatcher implements QueueingDispatcher
 {
-    use ResolvesDefaultQueue;
+    use ResolvesQueueDefaults;
 
     /**
      * The container implementation.

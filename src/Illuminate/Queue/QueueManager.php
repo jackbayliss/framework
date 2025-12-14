@@ -5,7 +5,7 @@ namespace Illuminate\Queue;
 use Closure;
 use Illuminate\Contracts\Queue\Factory as FactoryContract;
 use Illuminate\Contracts\Queue\Monitor as MonitorContract;
-use Illuminate\Queue\Concerns\ResolvesDefaultQueue;
+use Illuminate\Queue\Concerns\ResolvesQueueDefaults;
 use InvalidArgumentException;
 
 /**
@@ -13,7 +13,7 @@ use InvalidArgumentException;
  */
 class QueueManager implements FactoryContract, MonitorContract
 {
-    use ResolvesDefaultQueue;
+    use ResolvesQueueDefaults;
 
     /**
      * The application instance.
@@ -122,8 +122,9 @@ class QueueManager implements FactoryContract, MonitorContract
     {
         $this->app['events']->listen(Events\WorkerStopping::class, $callback);
     }
+
     /**
-     * Set multiple default queues at once.
+     * Set the default queue for the given queueable class.
      *
      * @param  class-string  $class
      * @param  string  $queue
@@ -137,7 +138,7 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
-     * Set the default queues for the given classes.
+     * Set the default queues for the given queueable classes.
      *
      * @param  array<class-string, string>  $queues
      * @return $this
@@ -355,6 +356,16 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
+     * Get the queue defaults instance.
+     *
+     * @return \Illuminate\Queue\QueueDefaults
+     */
+    protected function queueDefaults()
+    {
+        return $this->app['queue.defaults'];
+    }
+
+    /**
      * Get the application instance used by the manager.
      *
      * @return \Illuminate\Contracts\Foundation\Application
@@ -391,15 +402,5 @@ class QueueManager implements FactoryContract, MonitorContract
     public function __call($method, $parameters)
     {
         return $this->connection()->$method(...$parameters);
-    }
-
-    /**
-     * Get the queue defaults instance.
-     *
-     * @return \Illuminate\Queue\QueueDefaults
-     */
-    protected function queueDefaults()
-    {
-       return $this->app['queue.defaults'];
     }
 }
