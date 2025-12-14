@@ -12,8 +12,6 @@ use InvalidArgumentException;
 
 class ChannelManager extends Manager implements DispatcherContract, FactoryContract
 {
-    use HasDefaultQueues;
-
     /**
      * The default channel used to deliver messages.
      *
@@ -161,15 +159,5 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
         $this->locale = $locale;
 
         return $this;
-    }
-
-    /**
-     * Get the queue defaults instance.
-     *
-     * @return \Illuminate\Queue\QueueDefaults
-     */
-    protected function getQueueDefaults()
-    {
-        return $this->container['queue.defaults'];
     }
 }

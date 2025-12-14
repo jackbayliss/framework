@@ -124,16 +124,6 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
-     * Get the queue defaults instance.
-     *
-     * @return \Illuminate\Queue\QueueDefaults
-     */
-    protected function getQueueDefaults()
-    {
-        return $this->app['queue.defaults'];
-    }
-
-    /**
      * Determine if the driver is connected.
      *
      * @param  string|null  $name
@@ -208,6 +198,33 @@ class QueueManager implements FactoryContract, MonitorContract
         }
 
         return call_user_func($this->connectors[$driver]);
+    }
+
+    /**
+     * Set the default queue for a given class.
+     *
+     * @param  string  $class
+     * @param  string  $queue
+     * @return $this
+     */
+    public function defaultQueue($class, $queue)
+    {
+        $this->app['queue.defaults']->set($class, $queue);
+
+        return $this;
+    }
+
+    /**
+     * Set multiple default queues at once.
+     *
+     * @param  array<class-string, string>  $queues
+     * @return $this
+     */
+    public function defaultQueues($queues)
+    {
+        $this->app['queue.defaults']->setMany($queues);
+
+        return $this;
     }
 
     /**
