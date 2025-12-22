@@ -2,16 +2,16 @@ name: 'update assets'
 
 on:
   push:
-    branches:
-      - master
-      - '*.x'
-    paths:
-      - 'src/Illuminate/Foundation/resources/exceptions/renderer/**'
-      - '!src/Illuminate/Foundation/resources/exceptions/renderer/dist/**'
-  pull_request:
-    paths:
-      - 'src/Illuminate/Foundation/resources/exceptions/renderer/**'
-      - '!src/Illuminate/Foundation/resources/exceptions/renderer/dist/**'
+#    branches:
+#      - master
+#      - '*.x'
+#    paths:
+#      - 'src/Illuminate/Foundation/resources/exceptions/renderer/**'
+#      - '!src/Illuminate/Foundation/resources/exceptions/renderer/dist/**'
+#  pull_request:
+#    paths:
+#      - 'src/Illuminate/Foundation/resources/exceptions/renderer/**'
+#      - '!src/Illuminate/Foundation/resources/exceptions/renderer/dist/**'
 
 permissions:
   contents: write
