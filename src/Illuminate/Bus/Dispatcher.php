@@ -320,7 +320,7 @@ class Dispatcher implements QueueingDispatcher
     }
 
     /**
-     * Get the queue defaults instance.
+     * Get the queue routes instance.
      *
      * @return \Illuminate\Queue\QueueRoutes
      */

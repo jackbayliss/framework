@@ -164,7 +164,7 @@ class ChannelManager extends Manager implements DispatcherContract, FactoryContr
     }
 
     /**
-     * Get the queue defaults instance.
+     * Get the queue routes instance.
      *
      * @return \Illuminate\Queue\QueueRoutes
      */
