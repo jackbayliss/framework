@@ -2,7 +2,7 @@
 
 namespace Illuminate\Queue\Concerns;
 
-trait ResolvesQueueDefaults
+trait ResolvesQueueRoutes
 {
     /**
      * Resolve the default queue name for a given queueable instance.
@@ -10,15 +10,15 @@ trait ResolvesQueueDefaults
      * @param  object  $queueable
      * @return string|null
      */
-    public function resolveDefaultQueue($queueable)
+    public function resolveQueueRoute($queueable)
     {
-        return $this->queueDefaults()->get($queueable);
+        return $this->queueRoutes()->get($queueable);
     }
 
     /**
      * Get the queue defaults instance.
      *
-     * @return \Illuminate\Queue\QueueDefaults
+     * @return \Illuminate\Queue\QueueRoutes
      */
-    abstract protected function queueDefaults();
+    abstract protected function queueRoutes();
 }
