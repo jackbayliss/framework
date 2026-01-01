@@ -204,7 +204,7 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Retrieve an item from the cache and delete it.
      *
-     * @@param  \BackedEnum|\UnitEnum|array|string  $key
+     * @param  \BackedEnum|\UnitEnum|array|string  $key
      * @param  mixed  $default
      * @return mixed
      */
