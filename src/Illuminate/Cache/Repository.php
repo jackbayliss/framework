@@ -257,8 +257,11 @@ class Repository implements ArrayAccess, CacheContract
     }
 
     /**
-     * {@inheritdoc}
+     * Store an item in the cache.
      *
+     * @param  \BackedEnum|\UnitEnum|array|string  $key
+     * @param  mixed  $value
+     * @param  \DateTimeInterface|\DateInterval|int|null  $ttl
      * @return bool
      */
     public function set($key, $value, $ttl = null): bool
@@ -332,13 +335,15 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Store an item in the cache if the key does not exist.
      *
-     * @param  string  $key
+     * @param  \BackedEnum|\UnitEnum|array|string  $key
      * @param  mixed  $value
      * @param  \DateTimeInterface|\DateInterval|int|null  $ttl
      * @return bool
      */
     public function add($key, $value, $ttl = null)
     {
+        $key = enum_value($key);
+
         $seconds = null;
 
         if ($ttl !== null) {
@@ -561,8 +566,9 @@ class Repository implements ArrayAccess, CacheContract
     }
 
     /**
-     * {@inheritdoc}
+     * Remove an item from the cache.
      *
+     * @param  \BackedEnum|\UnitEnum|array|string  $key
      * @return bool
      */
     public function delete($key): bool
