@@ -2,10 +2,10 @@ name: facades
 
 on:
   push:
-    branches:
-      - master
-      - '*.x'
-  workflow_dispatch:
+#    branches:
+#      - master
+#      - '*.x'
+#  workflow_dispatch:
 
 permissions:
   contents: write
