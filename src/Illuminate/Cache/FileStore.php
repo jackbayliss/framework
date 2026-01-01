@@ -207,7 +207,7 @@ class FileStore implements Store, LockProvider
      */
     public function forever($key, $value)
     {
-        return $this->put(enum_name($key), $value, 0);
+        return $this->put(enum_value($key), $value, 0);
     }
 
     /**

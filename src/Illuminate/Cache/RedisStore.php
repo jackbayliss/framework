@@ -124,7 +124,7 @@ class RedisStore extends TaggableStore implements LockProvider
         $connection = $this->connection();
 
         return (bool) $connection->setex(
-            $this->prefix.enum_name($key), (int) max(1, $seconds), $this->connectionAwareSerialize($value, $connection)
+            $this->prefix.enum_value($key), (int) max(1, $seconds), $this->connectionAwareSerialize($value, $connection)
         );
     }
 

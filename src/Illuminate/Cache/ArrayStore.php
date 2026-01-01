@@ -122,7 +122,7 @@ class ArrayStore extends TaggableStore implements LockProvider
      */
     public function increment($key, $value = 1)
     {
-        $key = enum_name($key);
+        $key = enum_value($key);
 
         if (! is_null($existing = $this->get($key))) {
             return tap(((int) $existing) + $value, function ($incremented) use ($key) {
@@ -191,7 +191,7 @@ class ArrayStore extends TaggableStore implements LockProvider
      */
     public function forget($key)
     {
-        $key = enum_name($key);
+        $key = enum_value($key);
 
         if (array_key_exists($key, $this->storage)) {
             unset($this->storage[$key]);
