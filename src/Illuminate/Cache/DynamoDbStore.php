@@ -12,6 +12,8 @@ use Illuminate\Support\InteractsWithTime;
 use Illuminate\Support\Str;
 use RuntimeException;
 
+use function Illuminate\Support\enum_value;
+
 class DynamoDbStore implements LockProvider, Store
 {
     use InteractsWithTime;
@@ -88,7 +90,7 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Retrieve an item from the cache by key.
      *
-     * @param  string  $key
+     * @param  \BackedEnum|\UnitEnum|string  $key
      * @return mixed
      */
     public function get($key)
@@ -98,7 +100,7 @@ class DynamoDbStore implements LockProvider, Store
             'ConsistentRead' => false,
             'Key' => [
                 $this->keyAttribute => [
-                    'S' => $this->prefix.$key,
+                    'S' => $this->prefix.enum_value($key),
                 ],
             ],
         ]);
@@ -190,7 +192,7 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Store an item in the cache for a given number of seconds.
      *
-     * @param  string  $key
+     * @param  \BackedEnum|\UnitEnum|string  $key
      * @param  mixed  $value
      * @param  int  $seconds
      * @return bool
@@ -201,7 +203,7 @@ class DynamoDbStore implements LockProvider, Store
             'TableName' => $this->table,
             'Item' => [
                 $this->keyAttribute => [
-                    'S' => $this->prefix.$key,
+                    'S' => $this->prefix.enum_value($key),
                 ],
                 $this->valueAttribute => [
                     $this->type($value) => $this->serialize($value),
@@ -258,7 +260,7 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Store an item in the cache if the key doesn't exist.
      *
-     * @param  string  $key
+     * @param  \BackedEnum|\UnitEnum|string  $key
      * @param  mixed  $value
      * @param  int  $seconds
      * @return bool
@@ -270,7 +272,7 @@ class DynamoDbStore implements LockProvider, Store
                 'TableName' => $this->table,
                 'Item' => [
                     $this->keyAttribute => [
-                        'S' => $this->prefix.$key,
+                        'S' => $this->prefix.enum_value($key),
                     ],
                     $this->valueAttribute => [
                         $this->type($value) => $this->serialize($value),
@@ -304,7 +306,7 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Increment the value of an item in the cache.
      *
-     * @param  string  $key
+     * @param  \BackedEnum|\UnitEnum|string  $key
      * @param  mixed  $value
      * @return int|false
      */
@@ -315,7 +317,7 @@ class DynamoDbStore implements LockProvider, Store
                 'TableName' => $this->table,
                 'Key' => [
                     $this->keyAttribute => [
-                        'S' => $this->prefix.$key,
+                        'S' => $this->prefix.enum_value($key),
                     ],
                 ],
                 'ConditionExpression' => 'attribute_exists(#key) AND #expires_at > :now',
@@ -349,7 +351,7 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Decrement the value of an item in the cache.
      *
-     * @param  string  $key
+     * @param  \BackedEnum|\UnitEnum|string  $key
      * @param  mixed  $value
      * @return int|false
      */
@@ -360,7 +362,7 @@ class DynamoDbStore implements LockProvider, Store
                 'TableName' => $this->table,
                 'Key' => [
                     $this->keyAttribute => [
-                        'S' => $this->prefix.$key,
+                        'S' => $this->prefix.enum_value($key),
                     ],
                 ],
                 'ConditionExpression' => 'attribute_exists(#key) AND #expires_at > :now',
@@ -394,13 +396,13 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Store an item in the cache indefinitely.
      *
-     * @param  string  $key
+     * @param \BackedEnum|\UnitEnum|string $key
      * @param  mixed  $value
      * @return bool
      */
     public function forever($key, $value)
     {
-        return $this->put($key, $value, Carbon::now()->addYears(5)->getTimestamp());
+        return $this->put(enum_value($key), $value, Carbon::now()->addYears(5)->getTimestamp());
     }
 
     /**
@@ -468,7 +470,7 @@ class DynamoDbStore implements LockProvider, Store
     /**
      * Remove an item from the cache.
      *
-     * @param  string  $key
+     * @param \BackedEnum|\UnitEnum|string  $key
      * @return bool
      */
     public function forget($key)
@@ -477,7 +479,7 @@ class DynamoDbStore implements LockProvider, Store
             'TableName' => $this->table,
             'Key' => [
                 $this->keyAttribute => [
-                    'S' => $this->prefix.$key,
+                    'S' => $this->prefix.enum_value($key),
                 ],
             ],
         ]);
