@@ -215,6 +215,16 @@ class TestView implements Stringable
     }
 
     /**
+     * Dump the rendered component and end the script.
+     *
+     * @return never
+     */
+    public function dd()
+    {
+        dd($this->rendered);
+    }
+
+    /**
      * Get the string contents of the rendered view.
      *
      * @return string
