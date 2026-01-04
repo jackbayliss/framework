@@ -137,11 +137,11 @@ class TestComponent implements Stringable
     }
 
     /**
-     * Dump the rendered component and end the script.
+     * Dump the component content and end the script.
      *
      * @return never
      */
-    public function dd()
+    public function ddContent()
     {
         dd($this->rendered);
     }
