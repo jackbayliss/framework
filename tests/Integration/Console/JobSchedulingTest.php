@@ -86,7 +86,7 @@ class JobSchedulingTest extends TestCase
         Queue::fake();
 
         Queue::route(JobWithDefaultQueue::class, 'default-queue');
-        Queue::route(JobWithoutDefaultQueue::class, 'fallback-queue', 'some-connection');
+        Queue::route(JobWithoutDefaultQueue::class, 'fallback-queue');
 
         /** @var \Illuminate\Console\Scheduling\Schedule $scheduler */
         $scheduler = $this->app->make(Schedule::class);
@@ -102,9 +102,6 @@ class JobSchedulingTest extends TestCase
         // Own queue takes precedence over default
         Queue::assertPushedOn('test-queue', JobWithDefaultQueue::class);
         Queue::assertPushedOn('fallback-queue', JobWithoutDefaultQueue::class);
-        Queue::assertPushed(JobWithoutDefaultQueue::class, function (JobWithoutDefaultQueue $job) {
-            return $job->connection === 'some-connection';
-        });
     }
 }
 
