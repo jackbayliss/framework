@@ -101,8 +101,9 @@ class JobSchedulingTest extends TestCase
 
         // Own queue takes precedence over default
         Queue::assertPushedOn('test-queue', JobWithDefaultQueue::class);
+        Queue::assertPushedOn('fallback-queue', JobWithoutDefaultQueue::class);
         Queue::assertPushed(JobWithoutDefaultQueue::class, function ($job) {
-            return $job->connection === 'some-connection' && $job->queue === 'fallback-queue';
+            return $job->connection === 'some-connection';
         });
     }
 }
