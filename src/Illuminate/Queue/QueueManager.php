@@ -99,6 +99,28 @@ class QueueManager implements FactoryContract, MonitorContract
     }
 
     /**
+     * Register an event listener for the daemon queue pausing.
+     *
+     * @param  mixed  $callback
+     * @return void
+     */
+    public function paused($callback)
+    {
+        $this->app['events']->listen(Events\QueuePaused::class, $callback);
+    }
+
+    /**
+     * Register an event listener for the daemon queue resuming.
+     *
+     * @param  mixed  $callback
+     * @return void
+     */
+    public function resumed($callback)
+    {
+        $this->app['events']->listen(Events\QueueResumed::class, $callback);
+    }
+
+    /**
      * Register an event listener for the daemon queue starting.
      *
      * @param  mixed  $callback
