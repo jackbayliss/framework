@@ -251,12 +251,7 @@ class Batch implements Arrayable, JsonSerializable
         if ($counts->pendingJobs === 0) {
             $this->repository->markAsFinished($this->id);
 
-            $container = Container::getInstance();
-
-            if ($container->bound(Dispatcher::class)) {
-                $container->make(Dispatcher::class)
-                    ->dispatch(new BatchFinished($this));
-            }
+            Container::getInstance()->make(Dispatcher::class)->dispatch(new BatchFinished($this));
         }
 
         if ($counts->pendingJobs === 0 && $this->hasThenCallbacks()) {
