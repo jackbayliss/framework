@@ -6,7 +6,7 @@ use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Bus\Events\BatchFinished;
 use Illuminate\Container\Container;
-use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Queue\CallQueuedClosure;
@@ -253,8 +253,8 @@ class Batch implements Arrayable, JsonSerializable
 
             $container = Container::getInstance();
 
-            if ($container->bound(EventDispatcher::class)) {
-                $container->make(EventDispatcher::class)
+            if ($container->bound(Dispatcher::class)) {
+                $container->make(Dispatcher::class)
                     ->dispatch(new BatchFinished($this));
             }
         }
