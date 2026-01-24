@@ -1143,10 +1143,8 @@ trait EnumeratesValues
     /**
      * Get a value retrieving callback.
      *
-     * @template TValueRetrieverReturn
-     *
-     * @param  (callable(TValue, TKey): TValueRetrieverReturn)|string|null  $value
-     * @return callable(TValue, TKey): TValueRetrieverReturn
+     * @param  callable|string|null  $value
+     * @return callable
      */
     protected function valueRetriever($value)
     {
