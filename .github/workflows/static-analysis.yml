@@ -1,7 +1,7 @@
 name: static analysis
 
 on:
-#  push:
+  push:
 #    branches:
 #      - master
 #      - '*.x'
