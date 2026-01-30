@@ -417,7 +417,7 @@ class RouteListCommand extends Command
      * Get the formatted action for display on the CLI.
      *
      * @param  array  $route
-     * @return string|null
+     * @return string
      */
     protected function formatActionForCli($route)
     {
