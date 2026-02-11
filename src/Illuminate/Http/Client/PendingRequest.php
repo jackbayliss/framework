@@ -461,6 +461,32 @@ class PendingRequest
     }
 
     /**
+     * Remove the given headers from the request.
+     *
+     * @param  array  $headers
+     * @return $this
+     */
+    public function withoutHeaders(array $headers)
+    {
+        return tap($this, function () use ($headers) {
+            $this->options['headers'] = Arr::except($this->options['headers'] ?? [], $headers);
+        });
+    }
+
+    /**
+     * Remove the given header from the request.
+     *
+     * @param  string  $name
+     * @return $this
+     */
+    public function withoutHeader(string $name)
+    {
+        return tap($this, function () use ($name) {
+            unset($this->options['headers'][$name]);
+        });
+    }
+
+    /**
      * Replace the given headers on the request.
      *
      * @param  array  $headers

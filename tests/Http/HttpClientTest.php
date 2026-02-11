@@ -1312,6 +1312,40 @@ class HttpClientTest extends TestCase
         });
     }
 
+    public function testItCanRemoveSingleHeader()
+    {
+        $this->factory->fake();
+
+        $this->factory->withHeaders([
+            'X-Test-Header' => 'foo',
+            'X-Another-Header' => 'bar',
+        ])->withoutHeader('X-Test-Header')->post('http://foo.com/json');
+
+        $this->factory->assertSent(function (Request $request) {
+            return $request->url() === 'http://foo.com/json' &&
+                $request->hasHeader('X-Another-Header', 'bar') &&
+                ! $request->hasHeader('X-Test-Header');
+        });
+    }
+
+    public function testItCanRemoveMultipleHeaders()
+    {
+        $this->factory->fake();
+
+        $this->factory->withHeaders([
+            'X-Test-Header' => 'foo',
+            'X-Another-Header' => 'bar',
+            'X-Third-Header' => 'baz',
+        ])->withoutHeaders(['X-Test-Header', 'X-Another-Header'])->post('http://foo.com/json');
+
+        $this->factory->assertSent(function (Request $request) {
+            return $request->url() === 'http://foo.com/json' &&
+                $request->hasHeader('X-Third-Header', 'baz') &&
+                ! $request->hasHeader('X-Test-Header') &&
+                ! $request->hasHeader('X-Another-Header');
+        });
+    }
+
     public function testExceptionAccessorOnSuccess()
     {
         $resp = new Response(new Psr7Response());
