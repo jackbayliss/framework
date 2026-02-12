@@ -481,9 +481,7 @@ class PendingRequest
      */
     public function withoutHeader(string $name)
     {
-        return tap($this, function () use ($name) {
-            unset($this->options['headers'][$name]);
-        });
+        return $this->withoutHeaders([$name]);
     }
 
     /**
