@@ -3751,7 +3751,7 @@ class HttpClientTest extends TestCase
                     $onStatsFunctionCalled = true;
                 },
             ])
-            ->get('http://example.com')
+            ->get('https://example.com')
             ->handlerStats();
 
         $this->assertIsArray($stats);
