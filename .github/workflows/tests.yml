@@ -159,6 +159,8 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached, gmp, intl, :php-psr
           tools: composer:v2
           coverage: none
+        env:
+          debug: true
 
       - name: Set Framework version
         run: composer config version "12.x-dev"
