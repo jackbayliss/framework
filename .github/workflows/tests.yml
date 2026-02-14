@@ -111,7 +111,7 @@ jobs:
             !vendor/**/.gitignore
 
   windows_tests:
-    runs-on: windows-2025
+    runs-on: windows-2022
 #a
     strategy:
       fail-fast: true
@@ -153,7 +153,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@verbose
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, gd, pdo_mysql, fileinfo, ftp, redis, memcached, gmp, intl, :php-psr
