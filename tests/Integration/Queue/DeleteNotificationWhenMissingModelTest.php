@@ -54,7 +54,7 @@ class DeleteNotificationWhenMissingModelTest extends QueueTestCase
 
         DeleteNotificationTestModel::query()->where('name', 'test')->delete();
 
-        $this->runQueueWorkerCommand(['--once' => '1']);
+        $this->runQueueWorkerCommand(['--stop-when-empty' => true]);
 
         $this->assertFalse(DeleteWhenMissingNotification::$sent);
         $this->assertNull(\DB::table('failed_jobs')->first());
