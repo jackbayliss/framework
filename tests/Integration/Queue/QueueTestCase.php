@@ -4,6 +4,7 @@ namespace Illuminate\Tests\Integration\Queue;
 
 use Illuminate\Foundation\Testing\Concerns\InteractsWithRedis;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\DB;
 use Orchestra\Testbench\TestCase;
 
 abstract class QueueTestCase extends TestCase
@@ -65,6 +66,8 @@ abstract class QueueTestCase extends TestCase
 
                 $count++;
             } while ($count < $times);
+
+            DB::purge();
         }
     }
 
