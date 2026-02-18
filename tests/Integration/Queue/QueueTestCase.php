@@ -66,8 +66,6 @@ abstract class QueueTestCase extends TestCase
 
                 $count++;
             } while ($count < $times);
-
-            DB::purge();
         }
     }
 
