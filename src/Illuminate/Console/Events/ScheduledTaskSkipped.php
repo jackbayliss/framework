@@ -10,9 +10,11 @@ class ScheduledTaskSkipped
      * Create a new event instance.
      *
      * @param  \Illuminate\Console\Scheduling\Event  $task  The scheduled event being run.
+     * @param  \Illuminate\Console\Events\ScheduledTaskSkipReason  $reason  The reason the task was skipped.
      */
     public function __construct(
         public Event $task,
+        public ScheduledTaskSkipReason $reason,
     ) {
     }
 }

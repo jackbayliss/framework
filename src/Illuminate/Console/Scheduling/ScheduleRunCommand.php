@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
+use Illuminate\Console\Events\ScheduledTaskSkipReason;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -121,13 +122,13 @@ class ScheduleRunCommand extends Command
 
         foreach ($events as $event) {
             if ($paused && ! $event->runsWhenPaused()) {
-                $this->dispatcher->dispatch(new ScheduledTaskSkipped($event));
+                $this->dispatcher->dispatch(new ScheduledTaskSkipped($event, ScheduledTaskSkipReason::Paused));
 
                 continue;
             }
 
             if (! $event->filtersPass($this->laravel)) {
-                $this->dispatcher->dispatch(new ScheduledTaskSkipped($event));
+                $this->dispatcher->dispatch(new ScheduledTaskSkipped($event, ScheduledTaskSkipReason::Filtered));
 
                 continue;
             }
@@ -259,13 +260,13 @@ class ScheduleRunCommand extends Command
                 }
 
                 if ($paused && ! $event->runsWhenPaused()) {
-                    $this->dispatcher->dispatch(new ScheduledTaskSkipped($event));
+                    $this->dispatcher->dispatch(new ScheduledTaskSkipped($event, ScheduledTaskSkipReason::Paused));
 
                     continue;
                 }
 
                 if (! $event->filtersPass($this->laravel)) {
-                    $this->dispatcher->dispatch(new ScheduledTaskSkipped($event));
+                    $this->dispatcher->dispatch(new ScheduledTaskSkipped($event, ScheduledTaskSkipReason::Filtered));
 
                     continue;
                 }
