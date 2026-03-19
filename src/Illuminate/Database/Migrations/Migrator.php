@@ -761,7 +761,7 @@ class Migrator
     /**
      * Determine if there are any pending migrations.
      *
-     * @param  string[]|string  $paths
+     * @param  string|array  $paths
      * @return bool
      */
     public function hasPendingMigrations($paths = []): bool
