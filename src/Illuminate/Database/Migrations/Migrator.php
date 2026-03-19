@@ -147,7 +147,7 @@ class Migrator
      * @param  string[]  $ran
      * @return string[]
      */
-    protected function pendingMigrations($files, $ran)
+    public function pendingMigrations($files, $ran)
     {
         $migrationsToSkip = $this->migrationsToSkip();
 
