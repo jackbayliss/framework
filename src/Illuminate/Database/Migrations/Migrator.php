@@ -759,6 +759,19 @@ class Migrator
     }
 
     /**
+     * Determine if there are any pending migrations.
+     *
+     * @param  string[]|string  $paths
+     * @return bool
+     */
+    public function hasPendingMigrations($paths = []): bool
+    {
+        $files = $this->getMigrationFiles($paths);
+
+        return count($this->pendingMigrations($files, $this->repository->getRan())) > 0;
+    }
+
+    /**
      * Determine if any migrations have been run.
      *
      * @return bool
