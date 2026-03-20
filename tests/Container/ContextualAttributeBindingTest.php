@@ -166,6 +166,20 @@ class ContextualAttributeBindingTest extends TestCase
         $container->make(CacheTest::class);
     }
 
+    public function testCacheAttributeWithEnum()
+    {
+        $container = new Container;
+        $container->singleton('cache', function () {
+            $manager = m::mock(CacheManager::class);
+            $manager->shouldReceive('store')->with('unit')->andReturn(m::mock(CacheRepository::class));
+            $manager->shouldReceive('store')->with('backed')->andReturn(m::mock(CacheRepository::class));
+
+            return $manager;
+        });
+
+        $container->make(CacheEnumTest::class);
+    }
+
     public function testConfigAttribute()
     {
         $container = new Container;
@@ -372,6 +386,16 @@ enum StorageDiskBackedEnum: string
     case Backed = 'backed';
 }
 
+enum CacheStoreUnitEnum
+{
+    case unit;
+}
+
+enum CacheStoreBackedEnum: string
+{
+    case Backed = 'backed';
+}
+
 interface ContainerTestContract
 {
 }
@@ -488,6 +512,15 @@ final class CacheTest
 {
     public function __construct(#[Cache('foo')] CacheRepository $foo, #[Cache('bar')] CacheRepository $bar)
     {
+    }
+}
+
+final class CacheEnumTest
+{
+    public function __construct(
+        #[Cache(CacheStoreUnitEnum::unit)] CacheRepository $unit,
+        #[Cache(CacheStoreBackedEnum::Backed)] CacheRepository $backed,
+    ) {
     }
 }
 
