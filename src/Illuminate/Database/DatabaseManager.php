@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use PDO;
 use RuntimeException;
 
+use UnitEnum;
 use function Illuminate\Support\enum_value;
 
 /**
@@ -144,10 +145,12 @@ class DatabaseManager implements ConnectionResolverInterface
      * @param  bool  $force
      * @return \Illuminate\Database\ConnectionInterface
      */
-    public function connectUsing(string $name, array $config, bool $force = false)
+    public function connectUsing(UnitEnum|string $name, array $config, bool $force = false)
     {
+        $name = enum_value($name);
+
         if ($force) {
-            $this->purge($name = enum_value($name));
+            $this->purge($name);
         }
 
         if (isset($this->connections[$name])) {
