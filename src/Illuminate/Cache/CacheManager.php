@@ -276,6 +276,21 @@ class CacheManager implements FactoryContract
     }
 
     /**
+     * Create an instance of the fallback cache driver.
+     *
+     * @param  array  $config
+     * @return \Illuminate\Cache\Repository
+     */
+    protected function createFallbackDriver(array $config)
+    {
+        return $this->repository(new FallbackStore(
+            $this,
+            $this->app->make(DispatcherContract::class),
+            $config['stores']
+        ), ['events' => false, ...$config]);
+    }
+
+    /**
      * Create an instance of the file cache driver.
      *
      * @param  array  $config

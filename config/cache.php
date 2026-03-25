@@ -28,7 +28,7 @@ return [
     |
     | Supported drivers: "array", "database", "file", "memcached",
     |                    "redis", "dynamodb", "octane",
-    |                    "failover", "null"
+    |                    "failover", "fallback", "null"
     |
     */
 
@@ -98,6 +98,14 @@ return [
 
         'failover' => [
             'driver' => 'failover',
+            'stores' => [
+                'database',
+                'array',
+            ],
+        ],
+
+        'fallback' => [
+            'driver' => 'fallback',
             'stores' => [
                 'database',
                 'array',
