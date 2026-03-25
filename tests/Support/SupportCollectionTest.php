@@ -4072,6 +4072,13 @@ class SupportCollectionTest extends TestCase
     }
 
     #[DataProvider('collectionClassProvider')]
+    public function testSumPassesKeyToCallback($collection)
+    {
+        $c = new $collection([1 => 10, 2 => 20, 3 => 30]);
+        $this->assertEquals(6, $c->sum(fn ($value, $key) => $key));
+    }
+
+    #[DataProvider('collectionClassProvider')]
     public function testValueRetrieverAcceptsDotNotation($collection)
     {
         $c = new $collection([
