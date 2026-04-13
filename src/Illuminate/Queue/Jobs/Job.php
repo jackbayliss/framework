@@ -55,7 +55,7 @@ abstract class Job
      *
      * @var array
      */
-    protected $payload;
+    protected $decodedPayload;
 
     /**
      * The name of the connection the job belongs to.
@@ -290,7 +290,7 @@ abstract class Job
      */
     public function payload()
     {
-        return $this->payload ??= json_decode($this->getRawBody(), true);
+        return $this->decodedPayload ??= json_decode($this->getRawBody(), true);
     }
 
     /**
