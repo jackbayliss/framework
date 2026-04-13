@@ -51,6 +51,13 @@ abstract class Job
     protected $failed = false;
 
     /**
+     * The decoded payload of the job.
+     *
+     * @var array
+     */
+    protected $payload;
+
+    /**
      * The name of the connection the job belongs to.
      *
      * @var string
@@ -283,7 +290,7 @@ abstract class Job
      */
     public function payload()
     {
-        return json_decode($this->getRawBody(), true);
+        return $this->payload ??= json_decode($this->getRawBody(), true);
     }
 
     /**
@@ -323,7 +330,9 @@ abstract class Job
      */
     public function backoff()
     {
-        return $this->payload()['backoff'] ?? $this->payload()['delay'] ?? null;
+        $payload = $this->payload();
+
+        return $payload['backoff'] ?? $payload['delay'] ?? null;
     }
 
     /**
