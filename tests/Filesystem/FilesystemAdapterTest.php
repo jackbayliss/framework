@@ -745,6 +745,20 @@ class FilesystemAdapterTest extends TestCase
         $this->assertEquals('https://example.org/images/picture.jpeg', $filesystemAdapter->url('picture.jpeg'));
     }
 
+    public function testLocalUrlEncodesPaths()
+    {
+        $filesystemAdapter = new FilesystemAdapter($this->filesystem, $this->adapter);
+
+        // Spaces in filenames are percent-encoded.
+        $this->assertEquals('/storage/my%20file.txt', $filesystemAdapter->url('my file.txt'));
+
+        // Literal percent signs in filenames are double-encoded so the URL round-trips correctly.
+        $this->assertEquals('/storage/serve%2520file%2520test.txt', $filesystemAdapter->url('serve%20file%20test.txt'));
+
+        // Directory separators are preserved.
+        $this->assertEquals('/storage/subdir/my%20file.txt', $filesystemAdapter->url('subdir/my file.txt'));
+    }
+
     public function testGetChecksum()
     {
         $filesystemAdapter = new FilesystemAdapter($this->filesystem, $this->adapter);

@@ -770,6 +770,10 @@ class FilesystemAdapter implements CloudFilesystemContract
      */
     protected function getLocalUrl($path)
     {
+        // Encode each path segment so that special characters (e.g. %, spaces) in filenames
+        // round-trip correctly when the URL is later decoded by the router or browser.
+        $path = implode('/', array_map('rawurlencode', explode('/', $path)));
+
         // If an explicit base URL has been set on the disk configuration then we will use
         // it as the base URL instead of the default path. This allows the developer to
         // have full control over the base path for this filesystem's generated URLs.
