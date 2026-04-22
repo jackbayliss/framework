@@ -6,8 +6,11 @@ use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Queue\Interruptible;
 use Illuminate\Contracts\Queue\Job as QueueJobContract;
+use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\Events\JobExceptionOccurred;
+use Illuminate\Queue\Events\JobInterrupted;
 use Illuminate\Queue\Events\JobPopped;
 use Illuminate\Queue\Events\JobPopping;
 use Illuminate\Queue\Events\JobProcessed;
@@ -507,6 +510,89 @@ class QueueWorkerTest extends TestCase
         }))->once();
     }
 
+    public function testJobInterruptedEventIsFiredWhenWorkerReceivesSignalDuringJob()
+    {
+        $worker = $this->getWorker('default', ['queue' => []]);
+        $job = new WorkerFakeJob;
+        $job->connectionName = 'default';
+        $worker->setCurrentJob($job);
+
+        $worker->notifyJobOfSignal(15);
+
+        $this->events->shouldHaveReceived('dispatch')->with(m::on(fn ($event) => $event instanceof JobInterrupted
+            && $event->connectionName === 'default'
+            && $event->job === $job
+            && $event->signal === 15
+        ))->once();
+    }
+
+    public function testJobInterruptedEventIsNotFiredWithoutACurrentJob()
+    {
+        $worker = $this->getWorker('default', ['queue' => []]);
+
+        $worker->notifyJobOfSignal(15);
+
+        $this->events->shouldNotHaveReceived('dispatch', [m::type(JobInterrupted::class)]);
+    }
+
+    public function testInterruptibleJobReceivesSignalViaStoppingMethod()
+    {
+        $command = new class implements Interruptible {
+            public ?int $signal = null;
+
+            public function stopping(int $signal): void
+            {
+                $this->signal = $signal;
+            }
+        };
+
+        $handler = m::mock(CallQueuedHandler::class);
+        $handler->shouldReceive('getRunningCommand')->andReturn($command);
+
+        $worker = $this->getWorker('default', ['queue' => []]);
+        $job = new WorkerFakeJob;
+        $job->resolvedJob = $handler;
+        $worker->setCurrentJob($job);
+
+        $worker->notifyJobOfSignal(15);
+
+        $this->assertSame(15, $command->signal);
+    }
+
+    public function testNonInterruptibleJobIsNotNotifiedOnSignal()
+    {
+        $command = new class {
+            public bool $stoppingCalled = false;
+
+            public function stopping(int $signal): void
+            {
+                $this->stoppingCalled = true;
+            }
+        };
+
+        $handler = m::mock(CallQueuedHandler::class);
+        $handler->shouldReceive('getRunningCommand')->andReturn($command);
+
+        $worker = $this->getWorker('default', ['queue' => []]);
+        $job = new WorkerFakeJob;
+        $job->resolvedJob = $handler;
+        $worker->setCurrentJob($job);
+
+        $worker->notifyJobOfSignal(15);
+
+        $this->assertFalse($command->stoppingCalled);
+    }
+
+    public function testJobInterruptedEventIsNotFiredAfterJobCompletes()
+    {
+        $worker = $this->getWorker('default', ['queue' => [new WorkerFakeJob]]);
+
+        $worker->runNextJob('default', 'queue', new WorkerOptions);
+        $worker->notifyJobOfSignal(15);
+
+        $this->events->shouldNotHaveReceived('dispatch', [m::type(JobInterrupted::class)]);
+    }
+
     /**
      * Helpers...
      */
@@ -539,6 +625,7 @@ class QueueWorkerTest extends TestCase
 
         return $options;
     }
+
 }
 
 /**
@@ -552,6 +639,16 @@ class InsomniacWorker extends Worker
     public function sleep($seconds)
     {
         $this->sleptFor = $seconds;
+    }
+
+    public function setCurrentJob($job): void
+    {
+        $this->currentJob = $job;
+    }
+
+    public function notifyJobOfSignal(int $signal): void
+    {
+        parent::notifyJobOfSignal($signal);
     }
 
     public function stop($status = 0, $options = null, $reason = null)
@@ -649,6 +746,7 @@ class WorkerFakeJob implements QueueJobContract
     public $connectionName = '';
     public $queue = '';
     public $rawBody = '';
+    public $resolvedJob = null;
 
     public function __construct($callback = null)
     {
@@ -787,6 +885,11 @@ class WorkerFakeJob implements QueueJobContract
     public function resolveQueuedJobClass()
     {
         return 'WorkerFakeJob';
+    }
+
+    public function getResolvedJob()
+    {
+        return $this->resolvedJob;
     }
 }
 
