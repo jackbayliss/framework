@@ -66,13 +66,15 @@ class DebounceLock
 
         $timestampKey = $key.':first_dispatched_at';
 
-        if (! $cache->has($timestampKey)) {
+        $firstDispatchedAt = $cache->get($timestampKey);
+
+        if (is_null($firstDispatchedAt)) {
             $cache->put($timestampKey, Carbon::now()->getTimestamp(), $ttl);
 
             return false;
         }
 
-        $elapsed = Carbon::now()->getTimestamp() - $cache->get($timestampKey);
+        $elapsed = Carbon::now()->getTimestamp() - $firstDispatchedAt;
 
         if ($elapsed >= $maxWait) {
             $cache->forget($timestampKey);
@@ -84,6 +86,17 @@ class DebounceLock
     }
 
     /**
+     * Get the current owner for the given job.
+     *
+     * @param  mixed  $job
+     * @return string|null
+     */
+    public function getCurrentOwner($job)
+    {
+        return $this->resolveCache($job)->get(static::getKey($job));
+    }
+
+    /**
      * Determine if the given owner is the current owner for this debounce key.
      *
      * @param  mixed  $job
@@ -92,18 +105,7 @@ class DebounceLock
      */
     public function isCurrentOwner($job, string $owner)
     {
-        return $this->resolveCache($job)->get(static::getKey($job)) === $owner;
-    }
-
-    /**
-     * Determine if a debounce token exists for the given job.
-     *
-     * @param  mixed  $job
-     * @return bool
-     */
-    public function lockExists($job)
-    {
-        return ! is_null($this->resolveCache($job)->get(static::getKey($job)));
+        return $this->getCurrentOwner($job) === $owner;
     }
 
     /**

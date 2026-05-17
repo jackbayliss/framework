@@ -251,12 +251,10 @@ class CallQueuedHandler
 
         $lock = new DebounceLock($this->container->make(Cache::class));
 
-        // Fail-open: if the lock no longer exists (cache eviction, TTL expiry), let the job execute...
-        if (! $lock->lockExists($command)) {
-            return false;
-        }
+        $currentOwner = $lock->getCurrentOwner($command);
 
-        return ! $lock->isCurrentOwner($command, $owner);
+        // Fail-open: if the lock no longer exists (cache eviction, TTL expiry), let the job execute...
+        return ! is_null($currentOwner) && $currentOwner !== $owner;
     }
 
     /**
