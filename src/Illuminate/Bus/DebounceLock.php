@@ -109,6 +109,17 @@ class DebounceLock
     }
 
     /**
+     * Determine if a debounce token exists for the given job.
+     *
+     * @param  mixed  $job
+     * @return bool
+     */
+    public function lockExists($job)
+    {
+        return ! is_null($this->getCurrentOwner($job));
+    }
+
+    /**
      * Remove the debounce token for the given job.
      *
      * @param  mixed  $job
