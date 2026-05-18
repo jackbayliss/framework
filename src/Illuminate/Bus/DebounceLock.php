@@ -86,6 +86,17 @@ class DebounceLock
     }
 
     /**
+     * Get the current owner for the given job,.
+     *
+     * @param  mixed  $job
+     * @return string|null
+     */
+    public function getCurrentOwner($job)
+    {
+        return $this->resolveCache($job)->get(static::getKey($job));
+    }
+
+    /**
      * Determine if the given owner is the current owner for this debounce key.
      *
      * @param  mixed  $job
@@ -94,7 +105,7 @@ class DebounceLock
      */
     public function isCurrentOwner($job, string $owner)
     {
-        return $this->resolveCache($job)->get(static::getKey($job)) === $owner;
+        return $this->getCurrentOwner($job) === $owner;
     }
 
     /**
@@ -105,7 +116,7 @@ class DebounceLock
      */
     public function lockExists($job)
     {
-        return ! is_null($this->resolveCache($job)->get(static::getKey($job)));
+        return ! is_null($this->getCurrentOwner($job));
     }
 
     /**
