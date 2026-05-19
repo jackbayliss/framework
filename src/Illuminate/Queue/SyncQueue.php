@@ -340,10 +340,10 @@ class SyncQueue extends Queue implements QueueContract
     /**
      * Delete all of the jobs from the queue.
      *
-     * @param  string  $queue
+     * @param  string|null  $queue
      * @return int
      */
-    public function clear($queue)
+    public function clear($queue = null)
     {
         return 0;
     }

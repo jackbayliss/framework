@@ -202,10 +202,10 @@ class FailoverQueue extends Queue implements QueueContract, ClearableQueue
     /**
      * Delete all of the jobs from the queue.
      *
-     * @param  string  $queue
+     * @param  string|null  $queue
      * @return int
      */
-    public function clear($queue)
+    public function clear($queue = null)
     {
         return $this->manager->connection($this->connections[0])->clear($queue);
     }
