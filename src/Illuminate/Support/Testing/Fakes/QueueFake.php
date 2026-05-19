@@ -712,6 +712,24 @@ class QueueFake extends QueueManager implements Fake, Queue
     }
 
     /**
+     * Delete all of the jobs from the queue.
+     *
+     * @param  string  $queue
+     * @return int
+     */
+    public function clear($queue)
+    {
+        $count = collect($this->jobs)->flatten(1)->where('queue', $queue)->count();
+
+        $this->jobs = collect($this->jobs)
+            ->map(fn ($jobs) => collect($jobs)->reject(fn ($job) => ($job['queue'] ?? null) === $queue)->values()->all())
+            ->filter()
+            ->all();
+
+        return $count;
+    }
+
+    /**
      * Push an array of jobs onto the queue.
      *
      * @param  array  $jobs

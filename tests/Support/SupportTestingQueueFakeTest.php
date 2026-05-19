@@ -594,6 +594,19 @@ class SupportTestingQueueFakeTest extends TestCase
         $pushedRaw = $this->fake->pushedRaw(fn ($payload, $queue, $options) => $options === []);
         $this->assertCount(0, $pushedRaw);
     }
+
+    public function testClearRemovesJobsForQueue()
+    {
+        $this->fake->push(new JobStub, '', 'default');
+        $this->fake->push(new JobStub, '', 'high');
+
+        $count = $this->fake->clear('high');
+
+        $this->assertSame(1, $count);
+        $remaining = collect($this->fake->pushedJobs())->flatten(1);
+        $this->assertCount(1, $remaining);
+        $this->assertSame('default', $remaining->first()['queue']);
+    }
 }
 
 enum QueueNameEnumStub: string

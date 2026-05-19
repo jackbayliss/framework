@@ -326,6 +326,17 @@ class BeanstalkdQueue extends Queue implements QueueContract
     }
 
     /**
+     * Delete all of the jobs from the queue.
+     *
+     * @param  string  $queue
+     * @return int
+     */
+    public function clear($queue)
+    {
+        return 0;
+    }
+
+    /**
      * Get the underlying Pheanstalk instance.
      *
      * @return \Pheanstalk\Contract\PheanstalkManagerInterface&\Pheanstalk\Contract\PheanstalkPublisherInterface&\Pheanstalk\Contract\PheanstalkSubscriberInterface

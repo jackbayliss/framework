@@ -3,13 +3,14 @@
 namespace Illuminate\Queue;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Illuminate\Contracts\Queue\ClearableQueue;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Queue\Events\QueueFailedOver;
 use Illuminate\Support\Collection;
 use RuntimeException;
 use Throwable;
 
-class FailoverQueue extends Queue implements QueueContract
+class FailoverQueue extends Queue implements QueueContract, ClearableQueue
 {
     /**
      * The queues which failed on the last action.
@@ -196,6 +197,17 @@ class FailoverQueue extends Queue implements QueueContract
     public function pop($queue = null)
     {
         return $this->manager->connection($this->connections[0])->pop($queue);
+    }
+
+    /**
+     * Delete all of the jobs from the queue.
+     *
+     * @param  string  $queue
+     * @return int
+     */
+    public function clear($queue)
+    {
+        return $this->manager->connection($this->connections[0])->clear($queue);
     }
 
     /**
