@@ -1,0 +1,65 @@
+name: Test release notes cleanup
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup release notes
+        id: cleaned-notes
+        run: |
+          echo "=== BEFORE ==="
+          echo -n "$RELEASE_NOTES"
+          echo
+
+          START_FROM=$(echo -n "$RELEASE_NOTES" | awk "/What's Changed/{ print NR; exit }" -)
+          DROP_FROM_CONTRIBUTORS=$(echo -n "$RELEASE_NOTES" | awk "/New Contributors/{ print NR; exit }" -)
+          DROP_FROM_FULL_CHANGELOG=$(echo -n "$RELEASE_NOTES" | awk "/Full Changelog/{ print NR; exit }" -)
+
+          # Drop everything starting from "Full Changelog"
+          if [ ! -z "$DROP_FROM_FULL_CHANGELOG" ]; then
+              RELEASE_NOTES=$(echo -n "$RELEASE_NOTES" | sed "${DROP_FROM_FULL_CHANGELOG},$ d")
+          fi
+
+          # Drop everything starting from "New Contributors"
+          if [ ! -z "$DROP_FROM_CONTRIBUTORS" ]; then
+              RELEASE_NOTES=$(echo -n "$RELEASE_NOTES" | sed "${DROP_FROM_CONTRIBUTORS},$ d")
+          fi
+
+          # Drop the line "What's Changed"
+          if [ ! -z "$START_FROM" ]; then
+              RELEASE_NOTES=$(echo -n "$RELEASE_NOTES" | sed "${START_FROM}d")
+          fi
+
+          # Strip leading "#" to prevent rendering as markdown headings
+          RELEASE_NOTES=$(echo -n "$RELEASE_NOTES" | sed 's/^\(\* \)#\+\s*/\1/')
+
+          echo "=== AFTER ==="
+          echo -n "$RELEASE_NOTES"
+          echo
+
+          {
+            echo 'notes<<EOF'
+            echo "$RELEASE_NOTES"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+        env:
+          RELEASE_NOTES: |
+            ## What's Changed
+
+            * [12.x] Fix infinite recursion when defining model scope with attribute as private by @noefleury in https://github.com/laravel/framework/pull/59958
+
+            * # [12.x] Fix infinite recursion when middleware group referencing itself by @noefleury in https://github.com/laravel/framework/pull/60002
+
+            ## New Contributors
+
+            * @noefleury made their first contribution in https://github.com/laravel/framework/pull/59958
+
+            ## Full Changelog
+
+            **Full Changelog**: https://github.com/laravel/framework/compare/v13.14.0...v13.15.0
+
+      - name: Show output
+        run: echo "${{ steps.cleaned-notes.outputs.notes }}"
