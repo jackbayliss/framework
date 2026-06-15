@@ -105,6 +105,27 @@ class ValidationValidatorTest extends TestCase
         $this->assertSame('post name is required', $v->errors()->all()[0]);
     }
 
+    public function testWildcardArrayCustomMessagesHandleMissingRulesGracefullyWhenAnotherRuleFails()
+    {
+        $trans = $this->getIlluminateArrayTranslator();
+        $v = new Validator($trans, [
+            'users' => [
+                [
+                    'name' => 'Taylor',
+                ],
+            ],
+        ], [
+            'users.*.name' => ['required', 'in:Otwell'],
+        ], [
+            'users.*.name' => [
+                'required' => 'user name is required',
+            ],
+        ]);
+
+        $this->assertFalse($v->passes());
+        $this->assertSame('validation.in', $v->errors()->all()[0]);
+    }
+
     public function testSometimesWorksOnNestedArrays()
     {
         $trans = $this->getIlluminateArrayTranslator();
@@ -4810,6 +4831,9 @@ class ValidationValidatorTest extends TestCase
 
         $v = new Validator($trans, ['x' => 'foo@gmail.com'], ['x' => 'Email']);
         $this->assertTrue($v->passes());
+
+        $v = new Validator($trans, ['x' => "\"foo\r\nBcc: victim@example.com\"@example.com"], ['x' => 'Email']);
+        $this->assertFalse($v->passes());
     }
 
     public function testValidateEmailWithInternationalCharacters()

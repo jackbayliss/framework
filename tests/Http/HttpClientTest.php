@@ -795,6 +795,35 @@ class HttpClientTest extends TestCase
         });
     }
 
+    public function testAttachPreservesEmptyContents()
+    {
+        $this->factory->fake();
+
+        $this->factory->attach('file')->post('http://foo.com/file');
+
+        $this->factory->assertSent(function (Request $request) {
+            return $request->url() === 'http://foo.com/file'
+                && $request->isMultipart()
+                && $request[0]['name'] === 'file'
+                && array_key_exists('contents', $request[0])
+                && $request[0]['contents'] === '';
+        });
+    }
+
+    public function testAttachPreservesFalseyStringContentsAndName()
+    {
+        $this->factory->fake();
+
+        $this->factory->attach('0', '0')->post('http://foo.com/file');
+
+        $this->factory->assertSent(function (Request $request) {
+            return $request->url() === 'http://foo.com/file'
+                && $request->isMultipart()
+                && $request[0]['name'] === '0'
+                && $request[0]['contents'] === '0';
+        });
+    }
+
     public function testCanSendMultipartDataWithSimplifiedParameters()
     {
         $this->factory->fake();
@@ -1420,8 +1449,12 @@ class HttpClientTest extends TestCase
             $exception = $e;
         }
 
+        // Ensure the exception message is truncated according to the request level truncation setting.
+        $this->assertEquals("HTTP request returned status code 403:\n[\"e (truncated...)\n", $exception->getMessage());
+
         $exception->report();
 
+        // Ensure that the truncation level is not changed when reporting the exception.
         $this->assertEquals("HTTP request returned status code 403:\n[\"e (truncated...)\n", $exception->getMessage());
 
         $this->assertEquals(60, RequestException::$truncateAt);
