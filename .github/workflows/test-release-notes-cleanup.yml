@@ -1,6 +1,7 @@
 name: Test release notes cleanup
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
