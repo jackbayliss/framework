@@ -265,6 +265,10 @@ trait ConfiguresPrompts
      */
     private function multiselectFallback($label, $options, $default = [], $required = false)
     {
+        if (! $this->laravel->runningUnitTests()) {
+            $this->output->writeln('  <fg=gray>Enter your selections separated by commas, or press Enter to select all.</>');
+        }
+
         $default = $default !== [] ? implode(',', $default) : null;
 
         if ($required === false && ! $this->laravel->runningUnitTests()) {
