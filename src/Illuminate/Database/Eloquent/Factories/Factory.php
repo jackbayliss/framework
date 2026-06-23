@@ -76,6 +76,13 @@ abstract class Factory
     protected $recycle;
 
     /**
+     * Indicates if magic "for" methods should use firstOrCreate rather than creating new models.
+     *
+     * @var bool
+     */
+    protected $reuseForMagicMethods = false;
+
+    /**
      * The "after making" callbacks that will be applied to the model.
      *
      * @var \Illuminate\Support\Collection
@@ -153,6 +160,13 @@ abstract class Factory
     protected static $expandRelationshipsByDefault = true;
 
     /**
+     * Indicates if magic "for" methods should use firstOrCreate by default.
+     *
+     * @var bool
+     */
+    protected static $reuseByDefault = false;
+
+    /**
      * The cached model class names resolved from attributes.
      *
      * @var array<class-string, class-string<TModel>|false>
@@ -184,6 +198,7 @@ abstract class Factory
         ?Collection $recycle = null,
         ?bool $expandRelationships = null,
         array $excludeRelationships = [],
+        bool $reuseForMagicMethods = false,
     ) {
         $this->count = $count;
         $this->states = $states ?? new Collection;
@@ -196,6 +211,7 @@ abstract class Factory
         $this->faker = $this->withFaker();
         $this->expandRelationships = $expandRelationships ?? self::$expandRelationshipsByDefault;
         $this->excludeRelationships = $excludeRelationships;
+        $this->reuseForMagicMethods = $reuseForMagicMethods ?: static::$reuseByDefault;
     }
 
     /**
@@ -782,6 +798,17 @@ abstract class Factory
     }
 
     /**
+     * Indicate that magic "for" methods should use firstOrCreate rather than creating new models.
+     *
+     * @param  bool  $reuse
+     * @return static
+     */
+    public function reuse($reuse = true)
+    {
+        return $this->newInstance(['reuseForMagicMethods' => $reuse]);
+    }
+
+    /**
      * Retrieve a random model of a given type from previously provided models to recycle.
      *
      * @template TClass of \Illuminate\Database\Eloquent\Model
@@ -929,6 +956,7 @@ abstract class Factory
             'recycle' => $this->recycle,
             'expandRelationships' => $this->expandRelationships,
             'excludeRelationships' => $this->excludeRelationships,
+            'reuseForMagicMethods' => $this->reuseForMagicMethods,
         ], $arguments)));
     }
 
@@ -1118,6 +1146,27 @@ abstract class Factory
         static::$factoryNameResolver = null;
         static::$namespace = 'Database\\Factories\\';
         static::$expandRelationshipsByDefault = true;
+        static::$reuseByDefault = false;
+    }
+
+    /**
+     * Specify that magic "for" methods should use firstOrCreate rather than creating new models by default.
+     *
+     * @return void
+     */
+    public static function reuseByDefault()
+    {
+        static::$reuseByDefault = true;
+    }
+
+    /**
+     * Specify that magic "for" methods should not use firstOrCreate by default.
+     *
+     * @return void
+     */
+    public static function dontReuseByDefault()
+    {
+        static::$reuseByDefault = false;
     }
 
     /**
@@ -1154,6 +1203,12 @@ abstract class Factory
         }
 
         if (str_starts_with($method, 'for')) {
+            if ($this->reuseForMagicMethods) {
+                $model = Model::unguarded(fn () => $relatedModel::firstOrCreate($parameters[0] ?? []));
+
+                return $this->for($model, $relationship);
+            }
+
             return $this->for($factory->state($parameters[0] ?? []), $relationship);
         } elseif (str_starts_with($method, 'has')) {
             if (count($parameters) > 1 && array_all($parameters, fn ($p) => is_array($p))) {
