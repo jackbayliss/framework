@@ -104,6 +104,7 @@ class DatabaseEloquentFactoryTest extends TestCase
     {
         $this->schema()->drop('users');
 
+        Factory::flushState();
         Container::setInstance(null);
 
         parent::tearDown();
@@ -953,6 +954,46 @@ class DatabaseEloquentFactoryTest extends TestCase
 
         $this->assertSame(3, FactoryTestUser::count());
         $this->assertSame(3, FactoryTestPost::count());
+    }
+
+    public function test_magic_for_methods_reuse_existing_models_when_reuse_is_enabled()
+    {
+        Factory::guessFactoryNamesUsing(function ($model) {
+            return $model.'Factory';
+        });
+
+        $postA = FactoryTestPostFactory::new()->reuse()->forUser(['name' => 'Jack'])->create();
+        $postB = FactoryTestPostFactory::new()->reuse()->forUser(['name' => 'Jack'])->create();
+
+        $this->assertSame(1, FactoryTestUser::count());
+        $this->assertSame($postA->user_id, $postB->user_id);
+    }
+
+    public function test_magic_for_methods_reuse_existing_models_when_reuse_by_default_is_enabled()
+    {
+        Factory::guessFactoryNamesUsing(function ($model) {
+            return $model.'Factory';
+        });
+
+        Factory::reuseByDefault();
+
+        $postA = FactoryTestPostFactory::new()->forUser(['name' => 'Jack'])->create();
+        $postB = FactoryTestPostFactory::new()->forUser(['name' => 'Jack'])->create();
+
+        $this->assertSame(1, FactoryTestUser::count());
+        $this->assertSame($postA->user_id, $postB->user_id);
+    }
+
+    public function test_magic_for_methods_do_not_reuse_without_reuse()
+    {
+        Factory::guessFactoryNamesUsing(function ($model) {
+            return $model.'Factory';
+        });
+
+        FactoryTestPostFactory::new()->forUser(['name' => 'Jack'])->create();
+        FactoryTestPostFactory::new()->forUser(['name' => 'Jack'])->create();
+
+        $this->assertSame(2, FactoryTestUser::count());
     }
 
     public function test_no_models_can_be_provided_to_recycle()
