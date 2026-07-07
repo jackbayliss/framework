@@ -898,6 +898,26 @@ class HttpClientTest extends TestCase
         $this->factory->assertNothingSent();
     }
 
+    public function testAssertNothingSentFailureListsTheRecordedRequests()
+    {
+        $this->factory->fake();
+
+        $this->factory->post('http://foo.com/form', [
+            'name' => 'Taylor',
+        ]);
+
+        $this->factory->get('http://bar.com/test');
+
+        try {
+            $this->factory->assertNothingSent();
+            $this->fail();
+        } catch (AssertionFailedError $e) {
+            $this->assertStringContainsString('The following requests were sent unexpectedly:', $e->getMessage());
+            $this->assertStringContainsString('POST http://foo.com/form', $e->getMessage());
+            $this->assertStringContainsString('GET http://bar.com/test', $e->getMessage());
+        }
+    }
+
     public function testRequestCount()
     {
         $this->factory->fake();

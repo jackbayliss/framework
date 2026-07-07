@@ -522,10 +522,11 @@ class Factory
      */
     public function assertNothingSent()
     {
-        PHPUnit::assertEmpty(
-            $this->recorded,
-            'Requests were recorded.'
-        );
+        $requestNames = (new Collection($this->recorded))
+            ->map(fn ($pair) => $pair[0]->method().' '.$pair[0]->url())
+            ->join("\n- ");
+
+        PHPUnit::assertEmpty($this->recorded, "The following requests were sent unexpectedly:\n\n- $requestNames\n");
     }
 
     /**
