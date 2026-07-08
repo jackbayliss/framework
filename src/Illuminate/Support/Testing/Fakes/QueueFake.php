@@ -12,6 +12,7 @@ use Illuminate\Events\CallQueuedListener;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Queue\Jobs\InspectedJob;
 use Illuminate\Queue\QueueManager;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ReflectsClosures;
@@ -573,7 +574,7 @@ class QueueFake extends QueueManager implements Fake, Queue
                     : $data['job'],
                 attempts: 0,
                 payload: [],
-                createdAt: null,
+                createdAt: isset($data['createdAt']) ? Carbon::createFromTimestamp($data['createdAt']) : null,
             ));
     }
 
@@ -595,7 +596,10 @@ class QueueFake extends QueueManager implements Fake, Queue
      */
     public function creationTimeOfOldestPendingJob($queue = null)
     {
-        return null;
+        return $this->pendingJobs($queue)
+            ->map(fn ($job) => $job->createdAt?->getTimestamp())
+            ->filter()
+            ->min();
     }
 
     /**
@@ -623,6 +627,7 @@ class QueueFake extends QueueManager implements Fake, Queue
                 'job' => $this->serializeAndRestore ? $this->serializeAndRestoreJob($job) : $job,
                 'queue' => $queue,
                 'data' => $data,
+                'createdAt' => Carbon::now()->getTimestamp(),
             ];
 
             if ($job instanceof ShouldBeUnique) {

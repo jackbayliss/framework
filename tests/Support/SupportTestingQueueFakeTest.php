@@ -8,6 +8,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Queue\CallQueuedClosure;
 use Illuminate\Queue\Jobs\InspectedJob;
 use Illuminate\Queue\QueueManager;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Testing\Fakes\QueueFake;
 use Mockery as m;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -675,6 +676,23 @@ class SupportTestingQueueFakeTest extends TestCase
         $this->assertInstanceOf(InspectedJob::class, $reserved->first());
         $this->assertTrue($reserved->contains(fn ($job) => $job->name === JobStub::class));
         $this->assertTrue($reserved->contains(fn ($job) => $job->name === JobToFakeStub::class));
+    }
+
+    public function testCreationTimeOfOldestPendingJob()
+    {
+        $this->assertNull($this->fake->creationTimeOfOldestPendingJob('foo'));
+
+        Carbon::setTestNow('2000-01-01 00:00:00');
+
+        $this->fake->push($this->job, '', 'foo');
+        $this->fake->push(new JobToFakeStub, '', 'bar');
+
+        $this->assertSame(
+            Carbon::now()->getTimestamp(),
+            $this->fake->creationTimeOfOldestPendingJob('foo')
+        );
+
+        Carbon::setTestNow();
     }
 
     public function testReservedSize()
