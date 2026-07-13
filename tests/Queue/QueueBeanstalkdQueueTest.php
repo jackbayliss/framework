@@ -91,9 +91,9 @@ class QueueBeanstalkdQueueTest extends TestCase
         $pheanstalk->shouldReceive('put')->once()->with(m::type('string'), Pheanstalk::DEFAULT_PRIORITY, 15, Pheanstalk::DEFAULT_TTR);
         $pheanstalk->shouldReceive('put')->once()->with(m::type('string'), 1024, 0, 60);
 
-        $this->queue->bulk([new BeanstalkdJobWithDelayAttribute, 'foo'], ['data']);
+        $this->queue->bulk([new BeanstalkdJobWithDelayAttribute], ['data']);
 
-        $this->container->shouldHaveReceived('bound')->with('events')->times(4);
+        $this->container->shouldHaveReceived('bound')->with('events')->twice();
     }
 
     public function testPopProperlyPopsJobOffOfBeanstalkd()
