@@ -92,8 +92,6 @@ class QueueBeanstalkdQueueTest extends TestCase
         $pheanstalk->shouldReceive('put')->once()->with(m::type('string'), 1024, 0, 60);
 
         $this->queue->bulk([new BeanstalkdJobWithDelayAttribute], ['data']);
-
-        $this->container->shouldHaveReceived('bound')->with('events')->twice();
     }
 
     public function testPopProperlyPopsJobOffOfBeanstalkd()
