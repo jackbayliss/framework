@@ -89,7 +89,6 @@ class QueueBeanstalkdQueueTest extends TestCase
         $pheanstalk = $this->queue->getPheanstalk();
         $pheanstalk->shouldReceive('useTube')->once()->with(m::type(TubeName::class));
         $pheanstalk->shouldReceive('put')->once()->with(m::type('string'), Pheanstalk::DEFAULT_PRIORITY, 15, Pheanstalk::DEFAULT_TTR);
-        $pheanstalk->shouldReceive('put')->once()->with(m::type('string'), 1024, 0, 60);
 
         $this->queue->bulk([new BeanstalkdJobWithDelayAttribute], ['data']);
     }
