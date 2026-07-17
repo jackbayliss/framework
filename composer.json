@@ -144,7 +144,7 @@
     },
     "suggest": {
         "ext-apcu": "Required to use the APC cache driver.",
-        "ext-fileinfo": "Required to use the Filesystem class.",
+        "ext-fileinfo": "Required to use the Filesystem and Image classes.",
         "ext-ftp": "Required to use the Flysystem FTP driver.",
         "ext-gd": "Required to use Illuminate\\Http\\Testing\\FileFactory::image().",
         "ext-memcached": "Required to use the memcache cache driver.",
