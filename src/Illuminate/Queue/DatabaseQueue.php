@@ -3,6 +3,7 @@
 namespace Illuminate\Queue;
 
 use Illuminate\Contracts\Queue\ClearableQueue;
+use Illuminate\Contracts\Queue\InspectableQueue;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Database\Connection;
 use Illuminate\Queue\Jobs\DatabaseJob;
@@ -15,7 +16,7 @@ use Illuminate\Support\Stringable;
 use PDO;
 use Throwable;
 
-class DatabaseQueue extends Queue implements QueueContract, ClearableQueue
+class DatabaseQueue extends Queue implements QueueContract, ClearableQueue, InspectableQueue
 {
     /**
      * The database connection instance.

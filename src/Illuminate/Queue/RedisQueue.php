@@ -3,6 +3,7 @@
 namespace Illuminate\Queue;
 
 use Illuminate\Contracts\Queue\ClearableQueue;
+use Illuminate\Contracts\Queue\InspectableQueue;
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Contracts\Redis\Factory as Redis;
 use Illuminate\Queue\Jobs\InspectedJob;
@@ -13,7 +14,7 @@ use Illuminate\Redis\Connections\PredisClusterConnection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class RedisQueue extends Queue implements QueueContract, ClearableQueue
+class RedisQueue extends Queue implements QueueContract, ClearableQueue, InspectableQueue
 {
     /**
      * The Redis factory implementation.
