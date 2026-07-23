@@ -7,6 +7,7 @@ use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\InteractsWithTime;
+use InvalidArgumentException;
 
 use function Illuminate\Support\enum_value;
 
@@ -44,6 +45,8 @@ class RateLimiter
      * @param  \UnitEnum|string|array<\UnitEnum|string, \Closure>  $name
      * @param  \Closure|null  $callback
      * @return $this
+     *
+     * @throws \InvalidArgumentException
      */
     public function for($name, ?Closure $callback = null)
     {
@@ -55,9 +58,11 @@ class RateLimiter
             return $this;
         }
 
-        $resolvedName = $this->resolveLimiterName($name);
+        if (is_null($callback)) {
+            throw new InvalidArgumentException('A callback must be provided when registering a rate limiter by name.');
+        }
 
-        $this->limiters[$resolvedName] = $callback;
+        $this->limiters[$this->resolveLimiterName($name)] = $callback;
 
         return $this;
     }

@@ -59,6 +59,15 @@ class RateLimiterTest extends TestCase
         $this->assertNotNull($rateLimiter->limiter('api'));
     }
 
+    public function testRegisterNamedRateLimiterWithoutCallbackThrows(): void
+    {
+        $rateLimiter = new RateLimiter($this->createStub(Cache::class));
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $rateLimiter->for('foo');
+    }
+
     public function testShouldUseOriginKeyAsPrefixWhenMultipleLimiterWithSameKey()
     {
         $rateLimiter = new RateLimiter(new Repository(new ArrayStore));
