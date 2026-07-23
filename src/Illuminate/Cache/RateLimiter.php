@@ -40,7 +40,7 @@ class RateLimiter
     }
 
     /**
-     * Register a named rate limiter configuration.
+     * Register one or more named rate limiter configurations.
      *
      * @param  \UnitEnum|string|array<\UnitEnum|string, \Closure>  $name
      * @param  \Closure|null  $callback
