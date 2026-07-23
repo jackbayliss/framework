@@ -40,6 +40,25 @@ class RateLimiterTest extends TestCase
         $this->assertNotNull($limiterClosure);
     }
 
+    public function testRegisterMultipleNamedRateLimitersViaArray(): void
+    {
+        $reflectedLimitersProperty = new ReflectionProperty(RateLimiter::class, 'limiters');
+
+        $rateLimiter = new RateLimiter($this->createStub(Cache::class));
+        $rateLimiter->for([
+            'login' => fn () => Limit::perMinute(5),
+            'api' => fn () => Limit::perMinute(100),
+        ]);
+
+        $limiters = $reflectedLimitersProperty->getValue($rateLimiter);
+
+        $this->assertArrayHasKey('login', $limiters);
+        $this->assertArrayHasKey('api', $limiters);
+
+        $this->assertNotNull($rateLimiter->limiter('login'));
+        $this->assertNotNull($rateLimiter->limiter('api'));
+    }
+
     public function testShouldUseOriginKeyAsPrefixWhenMultipleLimiterWithSameKey()
     {
         $rateLimiter = new RateLimiter(new Repository(new ArrayStore));

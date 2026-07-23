@@ -41,12 +41,20 @@ class RateLimiter
     /**
      * Register a named rate limiter configuration.
      *
-     * @param  \UnitEnum|string  $name
-     * @param  \Closure  $callback
+     * @param  \UnitEnum|string|array<\UnitEnum|string, \Closure>  $name
+     * @param  \Closure|null  $callback
      * @return $this
      */
-    public function for($name, Closure $callback)
+    public function for($name, ?Closure $callback = null)
     {
+        if (is_array($name)) {
+            foreach ($name as $limiterName => $limiterCallback) {
+                $this->for($limiterName, $limiterCallback);
+            }
+
+            return $this;
+        }
+
         $resolvedName = $this->resolveLimiterName($name);
 
         $this->limiters[$resolvedName] = $callback;
