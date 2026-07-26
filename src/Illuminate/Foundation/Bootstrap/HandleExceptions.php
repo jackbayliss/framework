@@ -3,6 +3,7 @@
 namespace Illuminate\Foundation\Bootstrap;
 
 use ErrorException;
+use Exception;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Log\LogManager;
@@ -97,25 +98,23 @@ class HandleExceptions
 
         try {
             $logger = static::$app->make(LogManager::class);
-
-            $this->ensureDeprecationLoggerIsConfigured();
-
-            $options = static::$app['config']->get('logging.deprecations') ?? [];
-
-            with($logger->channel('deprecations'), function ($log) use ($message, $file, $line, $level, $options) {
-                if ($options['trace'] ?? false) {
-                    $log->warning((string) new ErrorException($message, 0, $level, $file, $line));
-                } else {
-                    $log->warning(sprintf('%s in %s on line %s',
-                        $message, $file, $line
-                    ));
-                }
-            });
-        } catch (Throwable $e) {
-            fwrite(STDERR, 'DEBUG handleDeprecationError failed: '.$e::class.': '.$e->getMessage()."\n".$e->getTraceAsString()."\n");
-
+        } catch (Exception) {
             return;
         }
+
+        $this->ensureDeprecationLoggerIsConfigured();
+
+        $options = static::$app['config']->get('logging.deprecations') ?? [];
+
+        with($logger->channel('deprecations'), function ($log) use ($message, $file, $line, $level, $options) {
+            if ($options['trace'] ?? false) {
+                $log->warning((string) new ErrorException($message, 0, $level, $file, $line));
+            } else {
+                $log->warning(sprintf('%s in %s on line %s',
+                    $message, $file, $line
+                ));
+            }
+        });
     }
 
     /**
@@ -190,9 +189,7 @@ class HandleExceptions
 
         try {
             $this->getExceptionHandler()->report($e);
-        } catch (Throwable $reportingError) {
-            fwrite(STDERR, 'DEBUG report() failed: '.$reportingError::class.': '.$reportingError->getMessage()."\n".$reportingError->getTraceAsString()."\n");
-
+        } catch (Exception) {
             $exceptionHandlerFailed = true;
         }
 
