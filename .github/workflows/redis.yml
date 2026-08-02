@@ -79,14 +79,28 @@ jobs:
           sudo apt update
           sudo apt-get install -y --fix-missing redis-server
           sudo service redis-server stop
-          redis-server --daemonize yes --port 7000 --appendonly yes --cluster-enabled yes --cluster-config-file nodes-7000.conf
-          redis-server --daemonize yes --port 7001 --appendonly yes --cluster-enabled yes --cluster-config-file nodes-7001.conf
-          redis-server --daemonize yes --port 7002 --appendonly yes --cluster-enabled yes --cluster-config-file nodes-7002.conf
+          redis-server --daemonize yes --port 7000 --appendonly yes --cluster-enabled yes --cluster-config-file nodes-7000.conf --logfile "$PWD/redis-7000.log"
+          redis-server --daemonize yes --port 7001 --appendonly yes --cluster-enabled yes --cluster-config-file nodes-7001.conf --logfile "$PWD/redis-7001.log"
+          redis-server --daemonize yes --port 7002 --appendonly yes --cluster-enabled yes --cluster-config-file nodes-7002.conf --logfile "$PWD/redis-7002.log"
 
           for port in 7000 7001 7002; do
-            until redis-cli -p $port ping | grep -q PONG; do
-              sleep 0.5
+            ready=false
+            for attempt in $(seq 1 30); do
+              if redis-cli -p $port ping 2>/dev/null | grep -q PONG; then
+                ready=true
+                break
+              fi
+              sleep 1
             done
+
+            if [ "$ready" != true ]; then
+              echo "::error::redis-server on port $port never became reachable after 30s"
+              echo "--- redis-$port.log ---"
+              cat "redis-$port.log" || echo "(no log file was written)"
+              echo "--- processes ---"
+              ps aux | grep '[r]edis-server'
+              exit 1
+            fi
           done
 
           redis-cli --cluster create 127.0.0.1:7000 127.0.0.1:7001 127.0.0.1:7002 --cluster-replicas 0 --cluster-yes
