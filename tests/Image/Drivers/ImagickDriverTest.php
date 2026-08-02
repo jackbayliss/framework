@@ -493,8 +493,7 @@ class ImagickDriverTest extends TestCase
     protected function solidColorImageContents(int $red, int $green, int $blue, int $width = 100, int $height = 100): string
     {
         $imagick = new \Imagick;
-        $imagick->newImage($width, $height, new \ImagickPixel(sprintf('rgb(%d,%d,%d)', $red, $green, $blue)));
-        $imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_OPAQUE);
+        $imagick->newImage($width, $height, new \ImagickPixel(sprintf('srgba(%d, %d, %d, 1)', $red, $green, $blue)));
         $imagick->setImageFormat('png');
 
         $contents = $imagick->getImageBlob();
