@@ -2,9 +2,7 @@ name: Redis and Redis Cluster
 
 on:
   push:
-    branches:
-      - master
-      - "*.x"
+
   pull_request:
 
 permissions:
