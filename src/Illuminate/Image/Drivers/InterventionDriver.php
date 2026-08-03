@@ -175,7 +175,7 @@ abstract class InterventionDriver implements Driver
         $sample = clone $image;
 
         try {
-            return $sample->resize(1, 1)->colorAt(0, 0)->toHex(true);
+            return substr($sample->resize(1, 1)->colorAt(0, 0)->toHex(true), 0, 7);
         } finally {
             unset($sample);
         }
