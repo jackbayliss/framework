@@ -17,6 +17,7 @@ use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobReleasedAfterException;
 use Illuminate\Queue\Events\JobTimedOut;
 use Illuminate\Queue\Events\Looping;
+use Illuminate\Queue\Events\QueuePaused;
 use Illuminate\Queue\Events\WorkerIdle;
 use Illuminate\Queue\Events\WorkerInterrupted;
 use Illuminate\Queue\Events\WorkerPausing;
@@ -124,6 +125,13 @@ class Worker
      * @var bool
      */
     public $paused = false;
+
+    /**
+     * The queues the worker has observed to be paused.
+     *
+     * @var array<int, string>
+     */
+    protected $pausedQueues = [];
 
     /**
      * The callbacks used to pop jobs from queues.
@@ -447,7 +455,11 @@ class Worker
 
             $queues = explode(',', $queue);
 
-            $paused = array_flip($this->getPausedQueues($connection->getConnectionName(), $queues));
+            $pausedQueues = $this->getPausedQueues($connection->getConnectionName(), $queues);
+
+            $this->raiseQueuePausedEvents($connection->getConnectionName(), $pausedQueues);
+
+            $paused = array_flip($pausedQueues);
 
             foreach ($queues as $index => $queue) {
                 if (isset($paused[$queue])) {
@@ -487,6 +499,22 @@ class Worker
         }
 
         return $this->manager->getPausedQueues($connectionName, $queues);
+    }
+
+    /**
+     * Raise a "queue paused" event for each queue the worker has newly observed as paused.
+     *
+     * @param  string  $connectionName
+     * @param  array  $pausedQueues
+     * @return void
+     */
+    protected function raiseQueuePausedEvents($connectionName, array $pausedQueues)
+    {
+        foreach (array_diff($pausedQueues, $this->pausedQueues) as $queue) {
+            $this->events->dispatch(new QueuePaused($connectionName, $queue));
+        }
+
+        $this->pausedQueues = $pausedQueues;
     }
 
     /**
