@@ -528,6 +528,16 @@ class Queue implements QueueContract, ClearableQueue
     }
 
     /**
+     * Get the default queue managed by the connection.
+     *
+     * @return string
+     */
+    public function defaultManagedQueue(): string
+    {
+        return $this->config['connection']['queue'] ?? 'default';
+    }
+
+    /**
      * Dynamically pass method calls to the underlying queue.
      *
      * @param  string  $method

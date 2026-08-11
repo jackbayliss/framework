@@ -28,6 +28,7 @@ use Illuminate\Queue\Events\WorkerStopping;
 use Illuminate\Queue\Failed\FileFailedJobProvider;
 use Illuminate\Queue\Jobs\FakeJob;
 use Illuminate\Queue\Jobs\SqsJob;
+use Illuminate\Queue\NullQueue;
 use Illuminate\Queue\SqsQueue;
 use Illuminate\Queue\Worker;
 use Illuminate\Queue\WorkerStopReason;
@@ -155,6 +156,24 @@ class QueueTest extends TestCase
             $expected,
             $this->app['config']->get('queue.connections.cloud'),
         );
+    }
+
+    public function testItReturnsTheDefaultManagedQueueFromTheConnectionConfiguration()
+    {
+        $queue = new Queue($this->app, new NullQueue, $this->fakeEvents(), [
+            'connection' => ['queue' => 'test3'],
+        ]);
+
+        $this->assertSame('test3', $queue->defaultManagedQueue());
+    }
+
+    public function testItFallsBackToTheDefaultQueueWhenNoneIsConfigured()
+    {
+        $queue = new Queue($this->app, new NullQueue, $this->fakeEvents(), [
+            'connection' => [],
+        ]);
+
+        $this->assertSame('default', $queue->defaultManagedQueue());
     }
 
     public function testItDoesNotConfigureManagedQueuesWhenNotEnabled()
