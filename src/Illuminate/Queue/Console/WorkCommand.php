@@ -129,6 +129,14 @@ class WorkCommand extends Command
             $this->components->info(
                 sprintf('Processing jobs from the [%s] %s.', $queue, (new Stringable('queue'))->plural(explode(',', $queue)))
             );
+
+            $routes = $this->laravel->make('queue.routes');
+
+            foreach (array_unique(explode(',', $queue)) as $name) {
+                if (($resolved = $routes->forwardedQueue($name, $connection)) !== $name) {
+                    $this->components->info(sprintf('The [%s] queue has been forwarded to [%s].', $name, $resolved));
+                }
+            }
         }
 
         return $this->runWorker(
