@@ -112,6 +112,20 @@ interface Job
     public function maxExceptions();
 
     /**
+     * Determine if the job should fail when it timeouts.
+     *
+     * @return bool
+     */
+    public function shouldFailOnTimeout();
+
+    /**
+     * The number of seconds to wait before retrying a job that encountered an uncaught exception.
+     *
+     * @return int|int[]|null
+     */
+    public function backoff();
+
+    /**
      * Get the number of seconds the job can run.
      *
      * @return int|null
