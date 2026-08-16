@@ -726,7 +726,7 @@ class Worker
      */
     protected function markJobAsFailedIfItShouldFailOnTimeout($connectionName, $job, Throwable $e)
     {
-        if (method_exists($job, 'shouldFailOnTimeout') ? $job->shouldFailOnTimeout() : false) {
+        if ($job->shouldFailOnTimeout()) {
             $this->failJob($job, $e);
         }
     }
@@ -754,7 +754,7 @@ class Worker
     {
         $backoff = explode(
             ',',
-            method_exists($job, 'backoff') && ! is_null($job->backoff())
+            ! is_null($job->backoff())
                 ? $job->backoff()
                 : $options->backoff
         );
