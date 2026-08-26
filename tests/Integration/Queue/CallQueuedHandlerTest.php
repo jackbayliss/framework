@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\Job;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\CallQueuedHandler;
+use Illuminate\Queue\Events\JobDeletedForMissingModels;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Event;
@@ -116,6 +117,29 @@ class CallQueuedHandlerTest extends TestCase
         ]);
 
         Event::assertNotDispatched(JobFailed::class);
+    }
+
+    public function testJobDeletedForMissingModelsEventIsDispatchedWhenModelIsMissing()
+    {
+        Event::fake();
+
+        $instance = new CallQueuedHandler(new Dispatcher($this->app), $this->app);
+
+        $job = Mockery::mock(Job::class);
+        $job->expects('payload')->andReturn(['deleteWhenMissingModels' => true]);
+        $job->expects('resolveQueuedJobClass')->andReturn(CallQueuedHandlerExceptionThrower::class);
+        $job->expects('delete');
+
+        $instance->call($job, [
+            'command' => serialize(new CallQueuedHandlerExceptionThrower),
+        ]);
+
+        Event::assertNotDispatched(JobFailed::class);
+
+        Event::assertDispatched(JobDeletedForMissingModels::class, function ($event) use ($job) {
+            return $event->job === $job
+                && $event->exception instanceof ModelNotFoundException;
+        });
     }
 
     public function testJobIsDeletedIfHasDeleteAttribute()
