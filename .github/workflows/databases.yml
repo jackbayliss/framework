@@ -2,10 +2,10 @@ name: databases
 
 on:
   push:
-    branches:
-      - master
-      - '*.x'
-  pull_request:
+#    branches:
+#      - master
+#      - '*.x'
+#  pull_request:
 
 permissions:
   contents: read
@@ -246,7 +246,7 @@ jobs:
           DB_PASSWORD: password
 
   mssql_2019:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
 
     services:
@@ -280,7 +280,7 @@ jobs:
           DB_PASSWORD: Forge123
 
   mssql_2017:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
 
     services:
