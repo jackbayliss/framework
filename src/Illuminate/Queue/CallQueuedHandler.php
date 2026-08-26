@@ -22,6 +22,7 @@ use Illuminate\Events\CallQueuedListener;
 use Illuminate\Log\Context\Repository as ContextRepository;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\Events\JobDebounced;
+use Illuminate\Queue\Events\JobDeletedForMissingModels;
 use RuntimeException;
 
 class CallQueuedHandler
@@ -331,6 +332,12 @@ class CallQueuedHandler
 
         if ($job->payload()['deleteWhenMissingModels'] ?? false) {
             $this->ensureSuccessfulBatchJobIsRecordedForMissingModel($job, $job->resolveQueuedJobClass());
+
+            if ($this->container->bound('events')) {
+                $this->container->make('events')->dispatch(
+                    new JobDeletedForMissingModels($job, $e)
+                );
+            }
 
             return $job->delete();
         }
