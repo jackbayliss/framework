@@ -1,6 +1,46 @@
 # Release Notes for 12.x
 
-## [Unreleased](https://github.com/laravel/framework/compare/v12.62.0...12.x)
+## [Unreleased](https://github.com/laravel/framework/compare/v12.68.0...12.x)
+
+## [v12.68.0](https://github.com/laravel/framework/compare/v12.67.0...v12.68.0) - 2026-08-25
+
+* Fix resource loading by [@taylorotwell](https://github.com/taylorotwell) in https://github.com/laravel/framework/pull/61323
+
+## [v12.67.0](https://github.com/laravel/framework/compare/v12.66.0...v12.67.0) - 2026-08-18
+
+* [12.x] Stricten `upload` to be fetch only from request's query string for temporary upload urls by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/framework/pull/61145
+* [12.x] Improves `in` validation rule from getting bypass via loose comparison by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/framework/pull/61146
+* [12.x] Retry timed-out cloud agent long-polls by [@kieranbrown](https://github.com/kieranbrown) in https://github.com/laravel/framework/pull/61178
+* [12.x] Escape single quotes in Postgres JSON path attributes by [@crynobone](https://github.com/crynobone) in https://github.com/laravel/framework/pull/61192
+* [12.x] Promote nested data to top-level managed queue event by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/framework/pull/61225
+* [12.x] Backport #60908: Avoid quadratic wildcard rule expansion by [@OutlawPlz](https://github.com/OutlawPlz) in https://github.com/laravel/framework/pull/61232
+
+## [v12.66.0](https://github.com/laravel/framework/compare/v12.65.0...v12.66.0) - 2026-08-11
+
+* [12.x] Isolate cloud agent requests from global HTTP client configuration by [@kieranbrown](https://github.com/kieranbrown) in https://github.com/laravel/framework/pull/61068
+* [12.x] Configure a socket timeout for the Cloud log driver by [@jessarcher](https://github.com/jessarcher) in https://github.com/laravel/framework/pull/61082
+* [12.x] ColumnDefinition::unsigned takes a parameter, which should be documented by [@afk11](https://github.com/afk11) in https://github.com/laravel/framework/pull/61123
+
+## [v12.65.0](https://github.com/laravel/framework/compare/v12.64.0...v12.65.0) - 2026-08-05
+
+* [12.x] Prevent fatal errors when logging deprecations fails by [@GrahamCampbell](https://github.com/GrahamCampbell) in https://github.com/laravel/framework/pull/60907
+* [12.x] Fix Factory::insert() with a count of zero by [@alies-dev](https://github.com/alies-dev) in https://github.com/laravel/framework/pull/60911
+* [12.x] Fix schedule:list timezone conversion for range, step, and wildcard cron expressions by [@xiCO2k](https://github.com/xiCO2k) in https://github.com/laravel/framework/pull/60913
+* [12.x] Fix getMigrationBatches return type annotation by [@wouterj](https://github.com/wouterj) in https://github.com/laravel/framework/pull/60973
+
+## [v12.64.0](https://github.com/laravel/framework/compare/v12.63.0...v12.64.0) - 2026-07-14
+
+* [12.x] Enum as queue overlap key by [@finagin](https://github.com/finagin) in https://github.com/laravel/framework/pull/60722
+* [12.x] Add capitalize parameter to Stringable::initials() by [@irabbi360](https://github.com/irabbi360) in https://github.com/laravel/framework/pull/60741
+
+## [v12.63.0](https://github.com/laravel/framework/compare/v12.62.0...v12.63.0) - 2026-07-07
+
+* [12.x] Add new error messages for detecting lost connections by [@mfn](https://github.com/mfn) in https://github.com/laravel/framework/pull/60472
+* [12.x] Ability to refresh cache locks by [@bytestream](https://github.com/bytestream) in https://github.com/laravel/framework/pull/58349
+* [12.x] Guard JsonSchema deserializer against unbounded $ref expansion by [@pushpak1300](https://github.com/pushpak1300) in https://github.com/laravel/framework/pull/60524
+* [12.x] Fix Postgres whereDate/whereTime crash when column is Expression by [@irabbi360](https://github.com/irabbi360) in https://github.com/laravel/framework/pull/60540
+* [12.x] Pop managed queue jobs from the cloud-agent instead of SQS by [@kieranbrown](https://github.com/kieranbrown) in https://github.com/laravel/framework/pull/60660
+* [12.x] Terminate default style value with a semicolon in ComponentAttributeBag::merge() by [@Amirhf1](https://github.com/Amirhf1) in https://github.com/laravel/framework/pull/60665
 
 ## [v12.62.0](https://github.com/laravel/framework/compare/v12.61.1...v12.62.0) - 2026-06-09
 
