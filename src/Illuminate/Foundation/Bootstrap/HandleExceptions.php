@@ -93,32 +93,10 @@ class HandleExceptions
             return;
         }
 
-        $logger = rescue(fn () => static::$app->make(LogManager::class), report: false);
-        $config = rescue(fn () => static::$app->make('config'), report: false);
-
-        if (is_null($logger) || is_null($config)) {
-            return;
-        }
-
-<<<<<<< HEAD
-        $this->ensureDeprecationLoggerIsConfigured($config);
-
-        $options = $config->get('logging.deprecations') ?? [];
-
-        with($logger->channel('deprecations'), function ($log) use ($message, $file, $line, $level, $options) {
-            if ($options['trace'] ?? false) {
-                $log->warning((string) new ErrorException($message, 0, $level, $file, $line));
-            } else {
-                $log->warning(sprintf('%s in %s on line %s',
-                    $message, $file, $line
-                ));
-            }
-        });
-=======
         try {
             $logger = static::$app->make(LogManager::class);
 
-            $this->ensureDeprecationLoggerIsConfigured();
+            $this->ensureDeprecationLoggerIsConfigured(static::$app['config']);
 
             $options = static::$app['config']->get('logging.deprecations') ?? [];
 
@@ -134,7 +112,6 @@ class HandleExceptions
         } catch (Throwable) {
             return;
         }
->>>>>>> upstream/13.x
     }
 
     /**
