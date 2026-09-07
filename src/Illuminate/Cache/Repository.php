@@ -115,7 +115,7 @@ class Repository implements ArrayAccess, CacheContract
     /**
      * Determine if an item doesn't exist in the cache.
      *
-     * @param  \UnitEnum|string  $key
+     * @param  \UnitEnum|array|string  $key
      * @return bool
      */
     public function missing($key)
