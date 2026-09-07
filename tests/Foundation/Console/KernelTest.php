@@ -2,11 +2,13 @@
 
 namespace Illuminate\Tests\Foundation\Console;
 
+use Illuminate\Console\Application as Artisan;
 use Illuminate\Console\Command;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Console\Kernel;
 use Illuminate\Foundation\Events\Terminating;
+use Illuminate\Tests\Foundation\Console\Fixtures\DiscoverableCommand;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -88,6 +90,32 @@ class KernelTest extends TestCase
 
         $this->assertSame($first, $second);
         $this->assertSame(1, KernelTestLazyCommand::$constructionAttempts);
+    }
+
+    public function testLoadSkipsCommandsThatOptOutOfDiscovery()
+    {
+        Artisan::forgetBootstrappers();
+
+        $app = new Application;
+        $app->useAppPath(__DIR__.'/Fixtures');
+
+        (new ReflectionClass($app))->getProperty('namespace')
+            ->setValue($app, 'Illuminate\\Tests\\Foundation\\Console\\Fixtures\\');
+
+        $events = new Dispatcher($app);
+        $app->instance('events', $events);
+        $kernel = new Kernel($app, $events);
+
+        (new ReflectionClass($kernel))->getMethod('load')->invoke($kernel, __DIR__.'/Fixtures');
+
+        $this->assertInstanceOf(
+            DiscoverableCommand::class,
+            $kernel->findCommand('kernel-test-discoverable-command')
+        );
+
+        $this->assertNull($kernel->findCommand('kernel-test-not-discoverable-command'));
+
+        Artisan::forgetBootstrappers();
     }
 
     protected function makeKernel(): Kernel
