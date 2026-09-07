@@ -11,6 +11,7 @@ use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Console\Kernel as KernelContract;
+use Illuminate\Contracts\Console\ShouldBeDiscovered;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
@@ -376,8 +377,16 @@ class Kernel implements KernelContract
 
             $command = rescue(fn () => new ReflectionClass($commandClassName), null, false);
 
-            return $command instanceof ReflectionClass
-                && $command->isSubClassOf(Command::class)
+            if (! $command instanceof ReflectionClass) {
+                return false;
+            }
+
+            if ($command->implementsInterface(ShouldBeDiscovered::class) &&
+                $command->getName()::shouldBeDiscovered() === false) {
+                return false;
+            }
+
+            return $command->isSubClassOf(Command::class)
                 && ! $command->isAbstract();
         };
 
