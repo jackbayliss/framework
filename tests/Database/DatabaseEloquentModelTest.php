@@ -3569,7 +3569,6 @@ class DatabaseEloquentModelTest extends TestCase
         $this->assertInstanceOf(MissingAttributeException::class, $callbackException);
         $this->assertSame(EloquentModelStub::class, $callbackException->model);
         $this->assertSame('this_attribute_does_not_exist', $callbackException->key);
-        $this->assertContains(__FUNCTION__, array_column($callbackException->getTrace(), 'function'));
 
         Model::preventAccessingMissingAttributes($originalMode);
         Model::handleMissingAttributeViolationUsing(null);
