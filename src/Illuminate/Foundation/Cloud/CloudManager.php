@@ -34,6 +34,15 @@ class CloudManager
     }
 
     /**
+     * Determine if the given queue is managed by Laravel Cloud.
+     */
+    public function managesQueue(string $queue): bool
+    {
+        return $this->usesManagedQueues()
+            && in_array($queue, $this->queue()->managedQueues(), true);
+    }
+
+    /**
      * Get the Laravel Cloud managed queue connection.
      *
      * @throws \RuntimeException
