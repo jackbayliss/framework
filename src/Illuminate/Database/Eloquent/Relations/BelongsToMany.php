@@ -1467,6 +1467,19 @@ class BelongsToMany extends Relation
     }
 
     /**
+     * Create a new instance of the related model without raising any events to the parent model.
+     *
+     * @param  array  $attributes
+     * @param  array  $joining
+     * @param  bool  $touch
+     * @return TRelatedModel&object{pivot: TPivotModel}
+     */
+    public function createQuietly(array $attributes = [], array $joining = [], $touch = true)
+    {
+        return Model::withoutEvents(fn () => $this->create($attributes, $joining, $touch));
+    }
+
+    /**
      * Create an array of new instances of the related models.
      *
      * @param  iterable  $records
@@ -1484,6 +1497,18 @@ class BelongsToMany extends Relation
         $this->touchIfTouching();
 
         return $instances;
+    }
+
+    /**
+     * Create an array of new instances of the related models without raising any events to the parent model.
+     *
+     * @param  iterable  $records
+     * @param  array  $joinings
+     * @return array<int, TRelatedModel&object{pivot: TPivotModel}>
+     */
+    public function createManyQuietly(iterable $records, array $joinings = [])
+    {
+        return Model::withoutEvents(fn () => $this->createMany($records, $joinings));
     }
 
     /** @inheritDoc */
