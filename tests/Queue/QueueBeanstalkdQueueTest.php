@@ -15,9 +15,11 @@ use Pheanstalk\Contract\PheanstalkPublisherInterface;
 use Pheanstalk\Contract\PheanstalkSubscriberInterface;
 use Pheanstalk\Pheanstalk;
 use Pheanstalk\Values\Job;
+use Pheanstalk\Values\ServerStats;
 use Pheanstalk\Values\TubeList;
 use Pheanstalk\Values\TubeName;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 
 class QueueBeanstalkdQueueTest extends TestCase
 {
@@ -138,6 +140,31 @@ class QueueBeanstalkdQueueTest extends TestCase
         $pheanstalk->expects('delete')->with(Mockery::type(JobIdInterface::class));
 
         $this->queue->deleteMessage('default', 1);
+    }
+
+    public function testTotalSizesAreReadFromTheServerStats()
+    {
+        $this->setQueue('default', 60);
+        $this->queue->getPheanstalk()->allows('stats')->andReturn($this->serverStats([
+            'currentJobsReady' => 3,
+            'currentJobsDelayed' => 2,
+            'currentJobsReserved' => 1,
+        ]));
+
+        $this->assertSame(6, $this->queue->totalSize());
+        $this->assertSame(3, $this->queue->totalPendingSize());
+        $this->assertSame(2, $this->queue->totalDelayedSize());
+        $this->assertSame(1, $this->queue->totalReservedSize());
+    }
+
+    private function serverStats(array $stats)
+    {
+        $parameters = (new ReflectionMethod(ServerStats::class, '__construct'))->getParameters();
+
+        return new ServerStats(...array_merge(
+            array_fill_keys(array_map(fn ($parameter) => $parameter->getName(), $parameters), 0),
+            $stats,
+        ));
     }
 
     /**

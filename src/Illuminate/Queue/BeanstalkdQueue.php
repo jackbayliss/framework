@@ -122,7 +122,11 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function totalSize()
     {
-        return 0;
+        $stats = $this->pheanstalk->stats();
+
+        return $stats->currentJobsReady
+            + $stats->currentJobsDelayed
+            + $stats->currentJobsReserved;
     }
 
     /**
@@ -132,7 +136,7 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function totalPendingSize()
     {
-        return 0;
+        return $this->pheanstalk->stats()->currentJobsReady;
     }
 
     /**
@@ -142,7 +146,7 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function totalDelayedSize()
     {
-        return 0;
+        return $this->pheanstalk->stats()->currentJobsDelayed;
     }
 
     /**
@@ -152,7 +156,7 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function totalReservedSize()
     {
-        return 0;
+        return $this->pheanstalk->stats()->currentJobsReserved;
     }
 
     /**
