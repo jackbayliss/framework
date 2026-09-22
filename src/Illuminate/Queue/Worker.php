@@ -282,18 +282,18 @@ class Worker
                 $this->runJob($job, $connectionName, $options);
 
                 $this->lastJobProcessedAt = $this->currentTime();
-
-                if ($options->rest > 0) {
-                    $this->sleep($options->rest);
-                }
-            } else {
-                $this->events->dispatch(new WorkerIdle($connectionName, $queue, $options));
-
-                $this->sleep($options->sleep);
             }
 
             if ($supportsAsyncSignals) {
                 $this->resetTimeoutHandler();
+            }
+
+            if ($job && $options->rest > 0) {
+                $this->sleep($options->rest);
+            } elseif (! $job) {
+                $this->events->dispatch(new WorkerIdle($connectionName, $queue, $options));
+
+                $this->sleep($options->sleep);
             }
 
             // Finally, we will check to see if we have exceeded our memory limits or if
