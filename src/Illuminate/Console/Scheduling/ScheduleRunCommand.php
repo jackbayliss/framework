@@ -204,10 +204,9 @@ class ScheduleRunCommand extends Command
             try {
                 $event->run($this->laravel);
 
-                $this->dispatcher->dispatch(new ScheduledTaskFinished(
-                    $event,
-                    round(microtime(true) - $start, 2)
-                ));
+                $runtime = $this->runtimeSince($start);
+
+                $this->dispatcher->dispatch(new ScheduledTaskFinished($event, $runtime));
 
                 $this->eventsRan = true;
 
@@ -215,7 +214,9 @@ class ScheduleRunCommand extends Command
                     throw new Exception("Scheduled command [{$event->command}] failed with exit code [{$event->exitCode}].");
                 }
             } catch (Throwable $e) {
-                $this->dispatcher->dispatch(new ScheduledTaskFailed($event, $e));
+                $this->dispatcher->dispatch(new ScheduledTaskFailed(
+                    $event, $e, $runtime ?? $this->runtimeSince($start)
+                ));
 
                 $this->handler->report($e);
             }
@@ -228,6 +229,17 @@ class ScheduleRunCommand extends Command
                 $event->getSummaryForDisplay(),
             ]);
         }
+    }
+
+    /**
+     * Get the number of seconds that have elapsed since the given timestamp.
+     *
+     * @param  float  $start
+     * @return float
+     */
+    protected function runtimeSince($start)
+    {
+        return round(microtime(true) - $start, 2);
     }
 
     /**
