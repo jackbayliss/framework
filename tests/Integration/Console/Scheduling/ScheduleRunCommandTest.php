@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Event;
 use Orchestra\Testbench\TestCase;
 use ReflectionMethod;
 use ReflectionProperty;
+use RuntimeException;
 
 class ScheduleRunCommandTest extends TestCase
 {
@@ -47,6 +48,26 @@ class ScheduleRunCommandTest extends TestCase
         Event::assertDispatched(ScheduledTaskFailed::class, function ($event) use ($task) {
             return $event->task === $task &&
                    $event->exception->getMessage() === 'Scheduled command [exit 1] failed with exit code [1].';
+
+    public function test_failing_callback_triggers_event_with_runtime()
+    {
+        Event::fake([
+            ScheduledTaskFinished::class,
+            ScheduledTaskFailed::class,
+        ]);
+
+        $schedule = $this->app->make(Schedule::class);
+        $task = $schedule->call(function () {
+            throw new RuntimeException('Callback failed.');
+        })->everyMinute();
+
+        $this->artisan('schedule:run');
+
+        Event::assertNotDispatched(ScheduledTaskFinished::class);
+        Event::assertDispatched(ScheduledTaskFailed::class, function ($event) use ($task) {
+            return $event->task === $task &&
+                   $event->exception->getMessage() === 'Callback failed.' &&
+                   is_float($event->runtime);
         });
     }
 
