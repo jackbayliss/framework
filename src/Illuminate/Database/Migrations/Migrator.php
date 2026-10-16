@@ -237,13 +237,15 @@ class Migrator
 
         $name = $this->getMigrationName($file);
 
-        if ($pretend) {
-            return $this->pretendToRun($migration, 'up');
-        }
-
         $shouldRunMigration = $migration instanceof Migration
             ? $migration->shouldRun()
             : true;
+
+        if ($pretend) {
+            return $shouldRunMigration
+                ? $this->pretendToRun($migration, 'up')
+                : $this->write(TwoColumnDetail::class, $name, '<fg=gray;options=bold>Skipped</>');
+        }
 
         if (! $shouldRunMigration) {
             $this->fireMigrationEvent(new MigrationSkipped($name));
