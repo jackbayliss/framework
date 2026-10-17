@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\CallQueuedHandler;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Jobs\FakeJob;
@@ -179,6 +180,34 @@ class WithoutOverlappingJobsTest extends QueueTestCase
             (new WithoutOverlapping(BackedCategory::backed))->withPrefix('prefix:')->shared()->getLockKey($job)
         );
     }
+
+    public function testGetLockUsesModelKey()
+    {
+        $job = new OverlappingTestJob;
+
+        $order = (new OverlappingTestModel)->forceFill(['id' => 1, 'status' => 'pending']);
+
+        $this->assertSame(
+            (new WithoutOverlapping(1))->getLockKey($job),
+            (new WithoutOverlapping($order))->getLockKey($job)
+        );
+
+        $this->assertSame(
+            'laravel-queue-overlap:1',
+            (new WithoutOverlapping($order))->shared()->getLockKey($job)
+        );
+
+        $lockKey = (new WithoutOverlapping($order))->getLockKey($job);
+
+        $order->status = 'shipped';
+
+        $this->assertSame($lockKey, (new WithoutOverlapping($order))->getLockKey($job));
+    }
+}
+
+class OverlappingTestModel extends Model
+{
+    //
 }
 
 class OverlappingTestJob
