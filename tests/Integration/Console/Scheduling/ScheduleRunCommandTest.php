@@ -9,9 +9,11 @@ use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CacheSchedulingMutex;
 use Illuminate\Console\Scheduling\EventMutex;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Console\Scheduling\ScheduledTaskSkipReason;
 use Illuminate\Console\Scheduling\ScheduleRunCommand;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Orchestra\Testbench\TestCase;
 use ReflectionMethod;
@@ -242,10 +244,59 @@ class ScheduleRunCommandTest extends TestCase
         $this->artisan('schedule:run');
 
         Event::assertDispatched(ScheduledTaskSkipped::class, function ($event) use ($task) {
-            return $event->task === $task;
+            return $event->task === $task &&
+                   $event->reason === ScheduledTaskSkipReason::RanOnAnotherServer;
         });
         Event::assertNotDispatched(ScheduledTaskStarting::class);
         Event::assertNotDispatched(ScheduledTaskFinished::class);
+        $this->assertFalse($ran);
+    }
+
+    public function test_task_skipped_event_is_dispatched_when_schedule_is_paused()
+    {
+        Event::fake([
+            ScheduledTaskStarting::class,
+            ScheduledTaskSkipped::class,
+        ]);
+
+        Cache::forever('illuminate:schedule:paused', true);
+
+        $ran = false;
+        $schedule = $this->app->make(Schedule::class);
+        $task = $schedule->call(function () use (&$ran) {
+            $ran = true;
+        })->everyMinute();
+
+        $this->artisan('schedule:run');
+
+        Event::assertDispatched(ScheduledTaskSkipped::class, function ($event) use ($task) {
+            return $event->task === $task &&
+                   $event->reason === ScheduledTaskSkipReason::Paused;
+        });
+        Event::assertNotDispatched(ScheduledTaskStarting::class);
+        $this->assertFalse($ran);
+    }
+
+    public function test_task_skipped_event_is_dispatched_when_condition_is_not_met()
+    {
+        Event::fake([
+            ScheduledTaskStarting::class,
+            ScheduledTaskSkipped::class,
+        ]);
+
+        $ran = false;
+        $schedule = $this->app->make(Schedule::class);
+        $task = $schedule->call(function () use (&$ran) {
+            $ran = true;
+        })->everyMinute()->when(fn () => false);
+
+        $this->artisan('schedule:run');
+
+        Event::assertDispatched(ScheduledTaskSkipped::class, function ($event) use ($task) {
+            return $event->task === $task &&
+                   $event->reason === ScheduledTaskSkipReason::ConditionNotMet;
+        });
+        Event::assertNotDispatched(ScheduledTaskStarting::class);
         $this->assertFalse($ran);
     }
 
