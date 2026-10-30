@@ -1270,6 +1270,23 @@ class SupportCollectionTest extends TestCase
     }
 
     #[DataProvider('collectionClassProvider')]
+    public function testWhereInUsingEnum($collection)
+    {
+        $data = new $collection([
+            ['id' => 1, 'name' => StaffEnum::Taylor],
+            ['id' => 2, 'name' => StaffEnum::Joe],
+            ['id' => 3, 'name' => StaffEnum::James],
+        ]);
+
+        $this->assertSame([1, 2], $data->whereIn('name', ['Taylor', 'Joe'])->pluck('id')->all());
+        $this->assertSame([1, 2], $data->whereIn('name', [StaffEnum::Taylor, StaffEnum::Joe])->pluck('id')->all());
+        $this->assertSame([1, 2], $data->whereInStrict('name', ['Taylor', 'Joe'])->pluck('id')->all());
+        $this->assertSame([3], $data->whereNotIn('name', ['Taylor', 'Joe'])->pluck('id')->values()->all());
+        $this->assertSame([3], $data->whereNotIn('name', [StaffEnum::Taylor, StaffEnum::Joe])->pluck('id')->values()->all());
+        $this->assertSame([3], $data->whereNotInStrict('name', ['Taylor', 'Joe'])->pluck('id')->values()->all());
+    }
+
+    #[DataProvider('collectionClassProvider')]
     public function testValues($collection)
     {
         $c = new $collection([['id' => 1, 'name' => 'Hello'], ['id' => 2, 'name' => 'World']]);

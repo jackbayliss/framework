@@ -701,9 +701,9 @@ trait EnumeratesValues
      */
     public function whereIn($key, $values, $strict = false)
     {
-        $values = $this->getArrayableItems($values);
+        $values = array_map(enum_value(...), $this->getArrayableItems($values));
 
-        return $this->filter(fn ($item) => in_array(data_get($item, $key), $values, $strict));
+        return $this->filter(fn ($item) => in_array(enum_value(data_get($item, $key)), $values, $strict));
     }
 
     /**
@@ -758,9 +758,9 @@ trait EnumeratesValues
      */
     public function whereNotIn($key, $values, $strict = false)
     {
-        $values = $this->getArrayableItems($values);
+        $values = array_map(enum_value(...), $this->getArrayableItems($values));
 
-        return $this->reject(fn ($item) => in_array(data_get($item, $key), $values, $strict));
+        return $this->reject(fn ($item) => in_array(enum_value(data_get($item, $key)), $values, $strict));
     }
 
     /**
