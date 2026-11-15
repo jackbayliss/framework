@@ -9,6 +9,7 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobReleasedAfterException;
+use Illuminate\Queue\Events\JobTimedOut;
 use Illuminate\Queue\Events\WorkerQueuePaused;
 use Illuminate\Queue\Events\WorkerQueueResumed;
 use Illuminate\Queue\Events\WorkerStopping;
@@ -210,6 +211,14 @@ class WorkCommand extends Command
             $this->logFailedJob($event);
         });
 
+        $this->laravel['events']->listen(JobTimedOut::class, function ($event) {
+            if ($event->job->hasFailed()) {
+                return;
+            }
+
+            $this->writeOutput($event->job, 'timed_out');
+        });
+
         $this->laravel['events']->listen(WorkerQueuePaused::class, function ($event) {
             $this->writeQueueStatus($event->connectionName, $event->queue, 'paused');
         });
@@ -354,6 +363,7 @@ class WorkCommand extends Command
             $status === 'success' && $job->isReleased() => ['RELEASED', 'yellow'],
             $status === 'success' => ['DONE', 'green'],
             $status === 'released_after_exception' => ['FAIL', 'yellow'],
+            $status === 'timed_out' => ['TIMED OUT', 'yellow'],
             default => ['FAIL', 'red'],
         };
 

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Queue\Events\JobTimedOut;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Worker;
 use Illuminate\Support\Carbon;
@@ -315,6 +316,33 @@ class WorkCommandTest extends QueueTestCase
             ->assertExitCode(0);
     }
 
+    public function testTimedOutJobIsWrittenAsTimedOut()
+    {
+        $this->markTestSkippedWhenUsingQueueDrivers(['beanstalkd']);
+
+        Queue::push(new TimingOutJob);
+
+        $this->artisan('queue:work', [
+            '--once' => true,
+            '--memory' => 1024,
+        ])->expectsOutputToContain('TIMED OUT')
+            ->assertExitCode(0);
+    }
+
+    public function testTimedOutJobIsWrittenAsJson()
+    {
+        $this->markTestSkippedWhenUsingQueueDrivers(['beanstalkd']);
+
+        Queue::push(new TimingOutJob);
+
+        $this->artisan('queue:work', [
+            '--once' => true,
+            '--memory' => 1024,
+            '--json' => true,
+        ])->expectsOutputToContain('"job":"'.addslashes(TimingOutJob::class).'","status":"timed_out"')
+            ->assertExitCode(0);
+    }
+
     public function testStopReasonIsWritten()
     {
         Queue::push(new FirstJob);
@@ -445,5 +473,15 @@ class JobWillFail implements ShouldQueue
     public function handle()
     {
         throw new RuntimeException;
+    }
+}
+
+class TimingOutJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable;
+
+    public function handle()
+    {
+        event(new JobTimedOut($this->job->getConnectionName(), $this->job, 1));
     }
 }
